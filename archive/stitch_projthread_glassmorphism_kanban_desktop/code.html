@@ -1,0 +1,1192 @@
+<!DOCTYPE html><html class="h-full" lang="pt-BR" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>ProjThread - Desktop WorkOS</title>
+<!-- Tailwind CSS v3 via CDN com plugins form e container-queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cyan: '#22d3ee',
+              teal: '#2dd4bf',
+              neon: '#38bdf8',
+              accent: '#0ea5e9'
+            },
+            glass: {
+              panel: 'rgba(15, 23, 42, 0.65)',
+              border: 'rgba(255, 255, 255, 0.18)',
+              glow: 'rgba(56, 189, 248, 0.35)'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+          },
+          boxShadow: {
+            'glow-cyan': '0 0 25px -4px rgba(34, 211, 238, 0.35)',
+            'glow-soft': '0 10px 30px -5px rgba(0, 0, 0, 0.45)',
+            'inner-bright': 'inset 0 1px 1px 0 rgba(255, 255, 255, 0.25)'
+          }
+        }
+      }
+    }
+  </script>
+<!-- CSS Customizado e Utilitários de Vidro Fosco Holográfico -->
+<style data-purpose="custom-glass-effects">
+    /* Efeito de Vidro Fosco & Luz Holográfica */
+    .glass-morphism {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.72) 0%, rgba(30, 41, 59, 0.62) 100%);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.55), inset 0 1px 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    
+    .glass-lane {
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.60) 0%, rgba(15, 23, 42, 0.45) 100%);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
+    }
+
+    .glass-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .glass-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(56, 189, 248, 0.6);
+      box-shadow: 0 10px 24px -4px rgba(14, 165, 233, 0.3);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.08) 100%);
+    }
+
+    /* Scrollbars discretos e translúcidos */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(56, 189, 248, 0.5);
+    }
+  </style>
+</head>
+<body class="h-full w-full overflow-hidden select-none bg-slate-900 font-sans text-slate-100 antialiased relative">
+<!-- BEGIN: DesktopBackground -->
+<!-- Plano de Fundo Imersivo Panorâmico Estilo Bliss -->
+<div class="absolute inset-0 z-0 pointer-events-none overflow-hidden" data-purpose="desktop-wallpaper">
+<img alt="Vibrant scenic wallpaper of rolling lush green hills under a bright clear azure blue sky with soft fluffy white cumulus clouds, peaceful Windows Bliss inspired landscape photography, cinematic, ultra-high resolution, serene nature landscape." class="w-full h-full object-cover object-center filter saturate-[1.1] brightness-[1.02]" src="https://lh3.googleusercontent.com/aida/AEtjO1Uhx-09OkKAwv1WADA5WF7QRK6dVY5LVKAsYUadzmaJyYaEWaQJ8I5-ytvEUsTnjQiPn7tNESX3AXcEw8FTjGqTYXRs8TdVBi0eDooIvAagyq5YtD6wudNYt77uRZY5bw2ME7aawvIDV3l6LxKPqWhIGSVgkpiSr3WtyUXs50MhXKlDHjSXVvmPk0fAGxHRk__Dt6PmtPpztZyAHQrAYQwZkQIEZesau_fX3bU83ilUPFLsrDq_HGHmGyI">
+<!-- Sutil gradiente de vinheta para contraste térmico de interfaces futuristas -->
+<div class="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-slate-900/20"></div>
+</div>
+<!-- END: DesktopBackground -->
+<!-- BEGIN: DesktopWorkspace -->
+<!-- Camada Principal da Área de Trabalho: Lanes do Kanban Flutuantes e Janela Ativa -->
+<main class="relative z-10 w-full h-[calc(100vh-3.25rem)] p-5 overflow-hidden flex flex-col justify-between" data-purpose="workspace-root">
+<!-- Top Status Bar Flutuante do Kanban -->
+<div class="w-full flex items-center justify-between px-3 py-1.5 rounded-xl bg-slate-950/40 backdrop-blur-md border border-white/10 text-xs text-white/90 shadow-lg mb-3">
+<div class="flex items-center space-x-3">
+<span class="flex h-2 w-2 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+</span>
+<span class="font-semibold tracking-wider text-cyan-300">PROJTHREAD OS // ENGINE CORE</span>
+<span class="text-white/40">|</span>
+<span class="text-slate-300">Workspace Holográfico #1 • Cluster Alpha-7</span>
+</div>
+<div class="flex items-center space-x-4">
+<div class="flex items-center space-x-2 text-slate-300">
+<svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"></circle></svg>
+<span class="">Render Sync: 99.8%</span>
+</div>
+<div class="bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 px-2 py-0.5 rounded text-[11px] font-medium">
+          Sprint 04 em Execução
+        </div>
+</div>
+</div>
+<!-- Container das 4 Colunas Holográficas do Kanban -->
+<div class="grid grid-cols-4 gap-4 flex-1 h-[calc(100%-3rem)] min-h-0 relative" data-purpose="kanban-lanes-container">
+<!-- COLUNA 1: Backlog / Ideias -->
+<section class="glass-lane rounded-2xl flex flex-col p-3 overflow-hidden" data-purpose="kanban-lane">
+<div class="flex items-center justify-between pb-3 border-b border-cyan-500/20 mb-3 px-1">
+<div class="flex items-center space-x-2">
+<span class="w-2.5 h-2.5 rounded-full bg-slate-400 shadow-[0_0_8px_rgba(148,163,184,0.8)]"></span>
+<h2 class="text-xs font-bold uppercase tracking-wider text-slate-200">Backlog / Ideias</h2>
+</div>
+<span class="text-[11px] px-2 py-0.5 rounded-full bg-white/10 text-white font-mono">3</span>
+</div>
+<div class="space-y-3 overflow-y-auto flex-1 pr-1">
+<article class="glass-card rounded-xl p-3 text-sm cursor-pointer group">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-400/30">Arquitetura</span>
+<span class="text-[11px] text-white/50 font-mono">TASK-112</span>
+</div>
+<h3 class="font-semibold text-white/95 leading-tight mb-2 drop-shadow-sm">Suporte nativo a WebGPU compute shaders</h3>
+<p class="text-xs text-white/70 line-clamp-2 mb-3">Avaliar fallback transparente para sistemas legados sem suporte a float16.</p>
+<div class="flex items-center justify-between text-xs text-white/60 pt-2 border-t border-white/10">
+<div class="flex -space-x-1.5 overflow-hidden">
+<span class="inline-block h-6 w-6 rounded-full ring-1 ring-cyan-400 bg-gradient-to-tr from-cyan-600 to-blue-500 flex items-center justify-center text-[10px] font-bold text-white">MK</span>
+</div>
+<div class="flex items-center space-x-2 text-[11px]">
+<span class="">💬 4</span>
+<span class="">📎 2</span>
+</div>
+</div>
+</article>
+<article class="glass-card rounded-xl p-3 text-sm cursor-pointer group">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">Design System</span>
+<span class="text-[11px] text-white/50 font-mono">TASK-115</span>
+</div>
+<h3 class="font-semibold text-white/95 leading-tight mb-2">Refino dos tokens de reflexão translúcida</h3>
+<div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden mb-3">
+<div class="bg-emerald-400 h-full w-1/4"></div>
+</div>
+<div class="flex items-center justify-between text-xs text-white/60">
+<span class="inline-block h-6 w-6 rounded-full ring-1 ring-emerald-400 bg-slate-700 flex items-center justify-center text-[10px] font-bold text-emerald-300">AL</span>
+<span class="text-[11px]">📎 1</span>
+</div>
+</article>
+</div>
+</section>
+<!-- COLUNA 2: Em Progresso (Sprint 04) -->
+<section class="glass-lane rounded-2xl flex flex-col p-3 overflow-hidden border-cyan-400/40" data-purpose="kanban-lane">
+<div class="flex items-center justify-between pb-3 border-b border-cyan-500/30 mb-3 px-1">
+<div class="flex items-center space-x-2">
+<span class="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.9)] animate-pulse"></span>
+<h2 class="text-xs font-bold uppercase tracking-wider text-cyan-200">Em Progresso (Sprint 04)</h2>
+</div>
+<span class="text-[11px] px-2 py-0.5 rounded-full bg-cyan-500/30 text-cyan-200 font-mono border border-cyan-500/40">2</span>
+</div>
+<div class="space-y-3 overflow-y-auto flex-1 pr-1">
+<!-- Card Ativo que está espelhado na Janela Aberta -->
+<article class="glass-card rounded-xl p-3 text-sm ring-2 ring-cyan-400 bg-cyan-950/40 shadow-glow-cyan" data-purpose="active-target-card">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-cyan-500/30 text-cyan-200 border border-cyan-400">Em Foco</span>
+<span class="text-[11px] text-cyan-300 font-mono font-bold">TASK-104</span>
+</div>
+<h3 class="font-bold text-white leading-tight mb-2 drop-shadow">Integração de Pipelines de Renderização Neural</h3>
+<p class="text-xs text-slate-200 mb-3">Conexão direta dos buffers de textura com o pipeline ONNX Runtime Web via SIMD.</p>
+<div class="w-full bg-slate-800/80 h-1.5 rounded-full overflow-hidden mb-3 ring-1 ring-white/20">
+<div class="bg-cyan-400 h-full w-3/4 shadow-[0_0_8px_#22d3ee]"></div>
+</div>
+<div class="flex items-center justify-between text-xs text-white/80 pt-2 border-t border-white/10">
+<div class="flex items-center space-x-1.5">
+<span class="h-6 w-6 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center text-[10px] font-bold text-white shadow">HV</span>
+<span class="text-[11px] text-cyan-200 font-medium">Helena Vaz</span>
+</div>
+<div class="flex items-center space-x-2 text-[11px] text-cyan-300">
+<span class="">💬 12</span>
+<span class="">📎 4</span>
+</div>
+</div>
+</article>
+<article class="glass-card rounded-xl p-3 text-sm cursor-pointer group">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-400/30">Frontend</span>
+<span class="text-[11px] text-white/50 font-mono">TASK-082</span>
+</div>
+<h3 class="font-semibold text-white/95 leading-tight mb-2">Refatoração Auth &amp; Handshake OIDC</h3>
+<div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden mb-3">
+<div class="bg-blue-400 h-full w-1/2"></div>
+</div>
+<div class="flex items-center justify-between text-xs text-white/60">
+<span class="inline-block h-6 w-6 rounded-full ring-1 ring-blue-400 bg-slate-800 flex items-center justify-center text-[10px] font-bold text-blue-300">CM</span>
+<span class="text-[11px]">💬 8 • 📎 3</span>
+</div>
+</article>
+</div>
+</section>
+<!-- COLUNA 3: Revisão Técnica -->
+<section class="glass-lane rounded-2xl flex flex-col p-3 overflow-hidden" data-purpose="kanban-lane">
+<div class="flex items-center justify-between pb-3 border-b border-amber-500/20 mb-3 px-1">
+<div class="flex items-center space-x-2">
+<span class="w-2.5 h-2.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]"></span>
+<h2 class="text-xs font-bold uppercase tracking-wider text-amber-200">Revisão Técnica</h2>
+</div>
+<span class="text-[11px] px-2 py-0.5 rounded-full bg-white/10 text-white font-mono">2</span>
+</div>
+<div class="space-y-3 overflow-y-auto flex-1 pr-1">
+<article class="glass-card rounded-xl p-3 text-sm cursor-pointer group">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-400/30">DevOps</span>
+<span class="text-[11px] text-white/50 font-mono">TASK-098</span>
+</div>
+<h3 class="font-semibold text-white/95 leading-tight mb-2">Cluster Kubernetes K3s Edge Autoscaling</h3>
+<p class="text-xs text-white/70 line-clamp-2 mb-3">Testes de carga sob latência de rede simulada com link 4G de alta perda.</p>
+<div class="flex items-center justify-between text-xs text-white/60">
+<span class="inline-block h-6 w-6 rounded-full ring-1 ring-amber-400 bg-slate-800 flex items-center justify-center text-[10px] font-bold text-amber-300">TR</span>
+<span class="text-[11px]">💬 19</span>
+</div>
+</article>
+</div>
+</section>
+<!-- COLUNA 4: Concluído -->
+<section class="glass-lane rounded-2xl flex flex-col p-3 overflow-hidden" data-purpose="kanban-lane">
+<div class="flex items-center justify-between pb-3 border-b border-emerald-500/20 mb-3 px-1">
+<div class="flex items-center space-x-2">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
+<h2 class="text-xs font-bold uppercase tracking-wider text-emerald-200">Concluído</h2>
+</div>
+<span class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono">14</span>
+</div>
+<div class="space-y-3 overflow-y-auto flex-1 pr-1">
+<article class="glass-card rounded-xl p-3 text-sm cursor-pointer opacity-85 hover:opacity-100">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Deploy</span>
+<span class="text-[11px] text-emerald-400 font-mono">✓ TASK-077</span>
+</div>
+<h3 class="font-semibold text-white/95 leading-tight mb-1">Mecanismo de Cache WASM L2</h3>
+<p class="text-xs text-white/60">Redução de overhead em 42ms para inicializações a frio.</p>
+</article>
+</div>
+</section>
+</div>
+<!-- BEGIN: CardDetailsWindow -->
+<!-- JANELA DE DETALHES DO CARD (Sobreposta / Flutuante no centro-direita) -->
+<div class="absolute top-7 right-8 bottom-16 left-auto w-[1140px] max-w-[85vw] glass-morphism rounded-2xl flex flex-col z-30 shadow-2xl border border-cyan-400/40 transition-all duration-300" data-purpose="card-window" id="cardDetailsWindow">
+<!-- TOPO 1: BARRA SUPERIOR DE CONTROLE E ARRASTE -->
+<header class="h-11 px-3 border-b border-white/10 flex items-center justify-between rounded-t-2xl select-none bg-white/[0.03]" data-purpose="window-titlebar">
+<!-- Grupo de Seleção de Disposição -->
+<div class="flex items-center space-x-1 p-0.5 rounded-lg border border-white/10 text-[11px] bg-black/30">
+<button class="px-2.5 py-1 rounded bg-cyan-500/30 text-cyan-200 border border-cyan-400/40 font-medium flex items-center space-x-1" id="btnWindowFloating" title="Modo Flutuante (Livre)">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">Flutuante</span>
+</button>
+<button class="px-2 py-1 rounded text-slate-400 hover:text-white hover:bg-white/5 transition flex items-center space-x-1" id="btnWindowPinned" title="Fixar Sobrepondo Tudo">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 15l7-7 7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">Sobrepor</span>
+</button>
+<button class="px-2 py-1 rounded text-slate-400 hover:text-white hover:bg-white/5 transition flex items-center space-x-1" id="btnWindowSubordinate" title="Fixar em Segundo Plano">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">Subordinar</span>
+</button>
+</div>
+<!-- Espaço Central Livre para Arraste & Drag Handle -->
+<div class="flex-1 mx-4 flex items-center justify-center space-x-2 cursor-move text-xs text-slate-300 font-medium" data-purpose="drag-handle">
+<!-- Pontilhado de pegada holográfico -->
+<div class="flex space-x-1 text-cyan-400/50">
+<span class="">•••••</span>
+</div>
+<span class="text-cyan-300 font-mono text-[11px] font-bold">TASK-104</span>
+<span class="text-white/40">|</span>
+<span class="truncate max-w-md text-white font-medium drop-shadow-sm">Integração de Pipelines de Renderização Neural</span>
+<div class="flex space-x-1 text-cyan-400/50">
+<span class="">•••••</span>
+</div>
+</div>
+<!-- Grupo de Controles de Janela à Direita -->
+<div class="flex items-center space-x-1 text-slate-300">
+<button class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/10 hover:text-white transition" id="btnMinimizeWindow" title="Minimizar (-)">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 12H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>
+</button>
+<button class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/10 hover:text-white transition" id="btnMaximizeWindow" title="Expandir / Retrair ([ ])">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect fill="none" height="16" rx="2" stroke="currentColor" stroke-width="2" width="16" x="4" y="4"></rect></svg>
+</button>
+<button class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-rose-500/80 hover:text-white transition" id="btnCloseWindow" title="Fechar (X)">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>
+</button>
+</div>
+</header>
+<!-- TOPO 2: BARRA DE NAVEGAÇÃO COMPLETA -->
+<nav class="h-10 px-3 border-b border-white/10 flex items-center justify-between text-xs bg-white/[0.02]" data-purpose="window-navigation-bar">
+<!-- Esquerda: Toggle do Painel Esquerdo + Navegação Histórico -->
+<div class="flex items-center space-x-2">
+<button class="px-2.5 py-1 rounded bg-cyan-500/25 hover:bg-cyan-500/35 text-cyan-200 border border-cyan-400/40 shadow-sm flex items-center space-x-1.5 transition font-medium text-xs" id="btnToggleLeftSidebar" title="Recolher / Expandir Bandeja Esquerda">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><rect fill="none" height="16" rx="1" stroke="currentColor" stroke-width="1.5" width="6" x="3" y="4"></rect></svg>
+<span class="" id="labelToggleLeftSidebar">Bandeja Esq.</span>
+</button>
+<div class="h-4 w-[1px] bg-white/10"></div>
+<!-- Histórico: Voltar / Avançar -->
+<div class="flex items-center space-x-0.5">
+<button class="w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 text-slate-300 hover:text-white" title="Voltar (←)">
+<span class="">←</span>
+</button>
+<button class="w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 text-slate-500 cursor-not-allowed" disabled="" title="Avançar (→)">
+<span class="">→</span>
+</button>
+</div>
+<!-- Breadcrumb Interativo de Localização -->
+<div class="flex items-center space-x-1.5 ml-2 px-2.5 py-1 rounded bg-black/25 border border-white/5 text-[11px] text-slate-300 font-mono">
+<svg class="w-3 h-3 text-cyan-400 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">ProjThread</span>
+<span class="text-white/30">&gt;</span>
+<span class="">Core Engine</span>
+<span class="text-white/30">&gt;</span>
+<span class="">Sprint 4</span>
+<span class="text-white/30">&gt;</span>
+<span class="text-cyan-300 font-bold">TASK-104</span>
+<span class="text-white/30">&gt;</span>
+<span class="text-emerald-300">Anexos</span>
+<button class="ml-1 text-white/50 hover:text-cyan-300 transition" title="Recarregar Localização (⟳)">⟳</button>
+</div>
+</div>
+<!-- Direita: Barra de Pesquisa Integrada e Controles da Bandeja Direita -->
+<div class="flex items-center space-x-2">
+<div class="relative flex items-center">
+<input class="w-64 border border-white/15 focus:border-cyan-400 rounded-lg pl-8 pr-3 py-1 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 bg-black/30" placeholder="Buscar no card ou anexos... ⌘K" type="text">
+<span class="absolute left-2.5 text-slate-400 text-xs">🔍</span>
+</div>
+<button class="w-7 h-7 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10" title="Ajuda do Sistema">
+            ?
+          </button><button class="px-2.5 py-1 rounded bg-cyan-500/25 hover:bg-cyan-500/35 text-cyan-200 border border-cyan-400/40 shadow-sm transition flex items-center space-x-1.5 font-medium text-xs" id="btnToggleRightSidebar" title="Recolher / Expandir Bandeja Direita"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path><rect fill="none" height="16" rx="1" stroke="currentColor" stroke-width="1.5" width="6" x="15" y="4"></rect></svg><span class="" id="labelToggleRightSidebar">Bandeja Dir.</span></button>
+</div>
+</nav>
+<!-- CORPO DA JANELA: 3 PARTES / COLUNAS HARMÔNICAS -->
+<div class="flex-1 flex min-h-0 overflow-hidden" data-purpose="window-body-grid">
+<!-- PARTE A) ESQUERDA: Bandeja Esquerda com Tab View (Chat, Projetos, Membros) -->
+<section class="w-80 flex-shrink-0 flex flex-col border-r border-white/10 transition-all duration-300 bg-transparent" data-purpose="left-tray" id="leftTraySection">
+<!-- Topo Tab View da Bandeja Esquerda -->
+<div class="p-2 border-b border-white/10 bg-white/[0.02]">
+<div class="flex items-center space-x-1 bg-black/40 p-1 rounded-xl border border-white/10" role="tablist">
+<button class="flex-1 py-1 px-1.5 rounded-lg text-[10px] font-medium transition flex items-center justify-center space-x-1 bg-cyan-500/30 text-cyan-200 border border-cyan-400/40 shadow-sm" id="tabBtnChat" onclick="switchLeftTab('chat')" title="Chat da tarefa">
+<span class="">💬</span>
+<span class="truncate font-semibold">Chat</span>
+</button>
+<button class="flex-1 py-1 px-1.5 rounded-lg text-[10px] font-medium transition flex items-center justify-center space-x-1 text-slate-400 hover:text-white hover:bg-white/5 border border-transparent" id="tabBtnProjects" onclick="switchLeftTab('projects')" title="Estrutura de projetos">
+<span class="">🌲</span>
+<span class="truncate">Projetos</span>
+</button>
+<button class="flex-1 py-1 px-1.5 rounded-lg text-[10px] font-medium transition flex items-center justify-center space-x-1 text-slate-400 hover:text-white hover:bg-white/5 border border-transparent" id="tabBtnMembers" onclick="switchLeftTab('members')" title="Membros do card">
+<span class="">👥</span>
+<span class="truncate">Membros</span>
+</button>
+</div>
+</div>
+<!-- Conteúdo Tab 1: Chat -->
+<div class="flex-1 flex flex-col min-h-0" id="leftTabChat">
+
+<div class="flex-1 p-3 overflow-y-auto space-y-3 text-xs" data-purpose="chat-messages-container">
+<div class="flex items-center justify-center my-1">
+<span class="px-2.5 py-0.5 rounded-full bg-white/10 border border-white/10 text-[10px] text-white/70 font-mono shadow-sm">
+        Hoje, 14 de Outubro
+      </span>
+</div>
+<div class="flex items-start space-x-2">
+<div class="w-7 h-7 rounded-full bg-gradient-to-tr from-cyan-600 to-teal-400 flex items-center justify-center text-[10px] font-bold text-white shadow ring-1 ring-cyan-300 flex-shrink-0">
+        HV
+      </div>
+<div class="max-w-[85%]">
+<div class="flex items-baseline space-x-1.5 mb-1">
+<span class="font-bold text-cyan-300 text-[11px]">Helena Vaz • Tech Lead</span>
+<span class="text-[9px] text-white/40">11:14</span>
+</div>
+<div class="p-2.5 rounded-2xl rounded-tl-sm bg-slate-800/80 border border-white/10 text-slate-200 text-xs shadow-sm">
+          Subi a revisão 2 da especificação do engine de inferência neural. Por favor, analisem as flags de shader no markdown ao centro.
+        </div>
+</div>
+</div>
+<div class="flex items-start space-x-2">
+<div class="w-7 h-7 rounded-full bg-gradient-to-tr from-amber-600 to-yellow-500 flex items-center justify-center text-[10px] font-bold text-white shadow ring-1 ring-amber-300 flex-shrink-0">
+        CM
+      </div>
+<div class="max-w-[85%]">
+<div class="flex items-baseline space-x-1.5 mb-1">
+<span class="font-bold text-amber-300 text-[11px]">Carlos Mendes • DevOps</span>
+<span class="text-[9px] text-white/40">11:20</span>
+</div>
+<div class="p-2.5 rounded-2xl rounded-tl-sm bg-slate-800/80 border border-white/10 text-slate-200 text-xs shadow-sm">
+          Validado no cluster de testes. A compilação em WebAssembly gerou 14% menos overhead nos drivers Chromium v122.
+        </div>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<div class="flex items-baseline space-x-1.5 mb-1">
+<span class="text-[9px] text-white/40">11:28</span>
+<span class="font-bold text-cyan-300 text-[11px]">José G. Gruber • Você</span>
+</div>
+<div class="p-2.5 rounded-2xl rounded-tr-sm bg-cyan-950/70 border border-cyan-400/40 text-cyan-100 text-xs shadow-sm max-w-[85%] text-left">
+        Perfeito. Estou abrindo o diagrama svg e o markdown de especificações agora para concluir os testes de memória de vídeo.
+      </div>
+</div>
+</div>
+<div class="p-2.5 border-t border-white/10 bg-slate-950/30" data-purpose="chat-input-bar">
+<div class="flex items-center space-x-1.5 bg-slate-900/90 rounded-xl px-2.5 py-1.5 border border-white/15 focus-within:border-cyan-400">
+<button class="text-slate-400 hover:text-cyan-300 transition text-sm" title="Anexar arquivo no chat">
+        📎
+      </button>
+<input class="bg-transparent border-0 focus:ring-0 text-xs text-white placeholder:text-slate-400 flex-1 px-1 py-0.5 focus:outline-none" placeholder="Responder na thread..." type="text">
+<button class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-2.5 py-1 rounded-lg text-xs transition shadow-sm" title="Enviar Mensagem">
+        ↑
+      </button>
+</div>
+</div>
+</div>
+<!-- Conteúdo Tab 2: Projetos (Árvore Hierárquica) -->
+<div class="flex-1 overflow-y-auto p-3 space-y-3 text-xs hidden" id="leftTabProjects">
+<div class="flex items-center justify-between px-1">
+<span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Árvore de Projetos</span>
+<span class="text-[10px] font-mono text-cyan-300">Workspace #1</span>
+</div>
+<div class="bg-black/30 p-2.5 rounded-xl border border-white/10 space-y-1 font-mono text-[11px]">
+<div class="flex items-center space-x-1.5 text-cyan-300 font-semibold py-1 px-1.5 rounded bg-cyan-950/40 border border-cyan-500/20">
+<span class="">🌐</span><span class="truncate">ProjThread Core Engine</span>
+</div>
+<div class="pl-3 ml-2 border-l border-white/10 space-y-1 pt-1">
+<div class="flex items-center space-x-1 text-slate-300 py-0.5 px-1 hover:bg-white/5 rounded cursor-pointer">
+<span class="">📁</span><span class="truncate">pipelines/neural-render</span>
+</div>
+<div class="pl-3 ml-2 border-l border-cyan-400/30 space-y-1">
+<div class="flex items-center justify-between py-1 px-1.5 rounded bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 font-medium">
+<div class="flex items-center space-x-1 truncate">
+<span class="">📄</span><span class="truncate">SPEC_ENGINE_v2.md</span>
+</div>
+<span class="text-[9px] text-cyan-300">ativo</span>
+</div>
+<div class="flex items-center space-x-1 text-slate-400 py-0.5 px-1 hover:bg-white/5 rounded cursor-pointer">
+<span class="">🖼️</span><span class="truncate">Render_Mockup.png</span>
+</div>
+<div class="flex items-center space-x-1 text-slate-400 py-0.5 px-1 hover:bg-white/5 rounded cursor-pointer">
+<span class="">⚡</span><span class="truncate">Architecture_Diagram.svg</span>
+</div>
+<div class="flex items-center space-x-1 text-slate-400 py-0.5 px-1 hover:bg-white/5 rounded cursor-pointer">
+<span class="">📊</span><span class="truncate">Benchmark_Results.csv</span>
+</div>
+</div>
+<div class="flex items-center space-x-1 text-slate-400 py-0.5 px-1 hover:bg-white/5 rounded cursor-pointer">
+<span class="">📁</span><span class="truncate">auth/oidc-handshake</span>
+</div>
+<div class="flex items-center space-x-1 text-slate-400 py-0.5 px-1 hover:bg-white/5 rounded cursor-pointer">
+<span class="">📁</span><span class="truncate">shaders/compute/float16</span>
+</div>
+<div class="flex items-center space-x-1 text-slate-400 py-0.5 px-1 hover:bg-white/5 rounded cursor-pointer">
+<span class="">📁</span><span class="truncate">infra/k3s-autoscaling</span>
+</div>
+</div>
+</div>
+<div class="p-2 rounded-xl bg-white/[0.02] border border-white/5 text-[10px] text-slate-400">
+<div class="flex items-center justify-between mb-1">
+<span class="text-white/60 font-semibold">Cluster Ativo</span>
+<span class="text-emerald-400 font-mono">Alpha-7 Sincronizado</span>
+</div>
+<p class="text-white/40 leading-tight">Todos os nós de sincronização estão espelhados em tempo real.</p>
+</div>
+</div>
+<!-- Conteúdo Tab 3: Membros -->
+<div class="flex-1 overflow-y-auto p-3 space-y-3 text-xs hidden" id="leftTabMembers">
+<div class="flex items-center justify-between px-1">
+<span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Membros da Tarefa</span>
+<button class="text-cyan-300 hover:text-cyan-200 text-xs font-semibold" title="Convidar membro">+ Convidar</button>
+</div>
+<div class="space-y-2">
+<!-- Membro 1: José G. Gruber (Você) -->
+<div class="p-2.5 rounded-xl bg-cyan-950/40 border border-cyan-400/40 flex items-center justify-between shadow-sm">
+<div class="flex items-center space-x-2.5 truncate">
+<div class="relative">
+<div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-600 to-teal-400 flex items-center justify-center font-bold text-white text-xs ring-2 ring-cyan-400">JG</div>
+<span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-slate-900 shadow-[0_0_6px_#22d3ee]"></span>
+</div>
+<div class="truncate">
+<div class="font-bold text-white flex items-center gap-1.5 text-xs">
+            José G. Gruber
+            <span class="text-[9px] px-1.5 py-0.2 rounded bg-cyan-500/30 text-cyan-200 border border-cyan-400/30">Você</span>
+</div>
+<div class="text-[10px] text-cyan-200/70 font-mono">Manager • Full Access</div>
+</div>
+</div>
+<span class="text-[9px] font-mono text-emerald-300 px-1.5 py-0.5 rounded bg-emerald-500/20">Online</span>
+</div>
+<!-- Membro 2: Helena Vaz -->
+<div class="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-400/30 flex items-center justify-between transition">
+<div class="flex items-center space-x-2.5 truncate">
+<div class="relative">
+<div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-500 flex items-center justify-center font-bold text-white text-xs">HV</div>
+<span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-slate-900"></span>
+</div>
+<div class="truncate">
+<div class="font-semibold text-slate-200 text-xs">Helena Vaz</div>
+<div class="text-[10px] text-slate-400 font-mono">Tech Lead • Read/Write</div>
+</div>
+</div>
+<span class="text-[9px] font-mono text-emerald-300 px-1.5 py-0.5 rounded bg-emerald-500/20">Online</span>
+</div>
+<!-- Membro 3: Marcos K. -->
+<div class="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-400/30 flex items-center justify-between transition">
+<div class="flex items-center space-x-2.5 truncate">
+<div class="relative">
+<div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center font-bold text-white text-xs">MK</div>
+<span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-slate-900"></span>
+</div>
+<div class="truncate">
+<div class="font-semibold text-slate-200 text-xs">Marcos K.</div>
+<div class="text-[10px] text-slate-400 font-mono">GPU Shaders • Read/Write</div>
+</div>
+</div>
+<span class="text-[9px] font-mono text-emerald-300 px-1.5 py-0.5 rounded bg-emerald-500/20">Online</span>
+</div>
+<!-- Membro 4: Carla Mendes -->
+<div class="p-2.5 rounded-xl bg-white/5 border border-white/10 hover:border-cyan-400/30 flex items-center justify-between transition">
+<div class="flex items-center space-x-2.5 truncate">
+<div class="relative">
+<div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-600 to-orange-500 flex items-center justify-center font-bold text-white text-xs">CM</div>
+<span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-amber-400 border-2 border-slate-900"></span>
+</div>
+<div class="truncate">
+<div class="font-semibold text-slate-200 text-xs">Carla Mendes</div>
+<div class="text-[10px] text-slate-400 font-mono">DevOps &amp; OIDC • Reviewer</div>
+</div>
+</div>
+<span class="text-[9px] font-mono text-amber-300 px-1.5 py-0.5 rounded bg-amber-500/20">Ausente</span>
+</div>
+</div>
+<div class="p-2.5 rounded-xl bg-black/30 border border-white/10 text-[10px] space-y-1.5">
+<div class="font-bold text-slate-300 uppercase tracking-wider">Governança de Acesso</div>
+<p class="text-white/50 leading-relaxed">Permissões de commit gerenciadas via RBAC e validadas por assinatura criptográfica HSM.</p>
+</div>
+</div>
+</section>
+<!-- PARTE B) CENTRO: Navegador e Visualizador de Anexos do Card -->
+<section class="flex-1 flex flex-col min-w-0 bg-transparent" data-purpose="attachment-viewer">
+<!-- Abas Superiores dos Anexos Abertos -->
+<div class="h-9 px-2 border-b border-white/10 flex items-center space-x-1 overflow-x-auto bg-white/[0.02]" data-purpose="viewer-tabs">
+<button class="tab-item px-3 py-1 text-xs rounded-md bg-white/15 border border-cyan-400/40 text-cyan-200 font-medium flex items-center space-x-1.5 flex-shrink-0">
+<span class="text-cyan-400">📄</span>
+<span class="">SPEC_ENGINE_v2.md</span>
+<span class="w-1.5 h-1.5 rounded-full bg-cyan-400 ml-1"></span>
+</button>
+<button class="tab-item px-3 py-1 text-xs rounded-md text-slate-300 hover:text-white hover:bg-white/5 flex items-center space-x-1.5 flex-shrink-0 transition">
+<span class="text-rose-400">🖼️</span>
+<span class="">Render_Mockup.png</span>
+</button>
+<button class="tab-item px-3 py-1 text-xs rounded-md text-slate-300 hover:text-white hover:bg-white/5 flex items-center space-x-1.5 flex-shrink-0 transition">
+<span class="text-amber-400">⚡</span>
+<span class="">Architecture_Diagram.svg</span>
+</button>
+<button class="tab-item px-3 py-1 text-xs rounded-md text-slate-300 hover:text-white hover:bg-white/5 flex items-center space-x-1.5 flex-shrink-0 transition">
+<span class="text-emerald-400">📊</span>
+<span class="">Benchmark_Results.csv</span>
+</button>
+</div>
+<!-- Barra de Ferramentas do Documento Ativo -->
+<!-- Área de Leitura Renderizada (Documento Técnico Formatado) -->
+<div class="flex-1 p-6 overflow-y-auto space-y-4 text-sm text-slate-200 font-sans leading-relaxed" data-purpose="document-content-render">
+<div class="pb-3 border-b border-white/10">
+<h1 class="text-xl font-bold text-white mb-1 tracking-tight flex items-center space-x-2">
+<span class="text-cyan-400">#</span>
+<span class="">Arquitetura de Renderização Neural Direta (SIMD / WebGPU)</span>
+</h1>
+<p class="text-xs text-slate-300 font-mono">Status: Aprovado em Pré-Execução • Target: Chrome/Firefox Desktop 120+</p>
+</div>
+<section class="space-y-2">
+<h2 class="text-sm font-bold uppercase tracking-wider text-cyan-300">1. Contexto &amp; Objetivo</h2>
+<p class="text-xs text-slate-200">
+                O módulo <code class="bg-black/40 px-1.5 py-0.5 rounded font-mono text-cyan-300 border border-cyan-500/20">NeuralRenderBridge</code> faz a ponte de dados entre tensores de inferência matemática e texturas RGBA em ponto flutuante diretamente no pipeline de rasterização.
+              </p>
+</section>
+<!-- Snippet de Código Técnico -->
+<section class="space-y-2">
+<div class="flex items-center justify-between text-[11px] font-mono text-slate-400 px-1">
+<span class="">pipeline_config.ts</span>
+<span class="text-emerald-400">TypeScript / WGSL</span>
+</div>
+<pre class="bg-slate-950/90 border border-white/15 rounded-xl p-3.5 font-mono text-xs text-cyan-100 overflow-x-auto shadow-inner"><code><span class="text-purple-400">export const</span> <span class="text-blue-300">neuralPipelineConfig</span> = {
+  <span class="text-slate-400">devicePreference:</span> <span class="text-emerald-300">'high-performance'</span>,
+  <span class="text-slate-400">tensorPrecision:</span> <span class="text-emerald-300">'float16'</span>,
+  <span class="text-slate-400">bindingGroupLayout:</span> {
+    <span class="text-slate-400">entries:</span> [
+      { <span class="text-slate-400">binding:</span> <span class="text-amber-400">0</span>, <span class="text-slate-400">visibility:</span> GPUShaderStage.COMPUTE, <span class="text-slate-400">buffer:</span> { <span class="text-slate-400">type:</span> <span class="text-emerald-300">'read-only-storage'</span> } },
+      { <span class="text-slate-400">binding:</span> <span class="text-amber-400">1</span>, <span class="text-slate-400">visibility:</span> GPUShaderStage.COMPUTE, <span class="text-slate-400">storageTexture:</span> { <span class="text-slate-400">format:</span> <span class="text-emerald-300">'rgba16float'</span> } }
+    ]
+  }
+};</code></pre>
+</section>
+<section class="space-y-2">
+<h2 class="text-sm font-bold uppercase tracking-wider text-cyan-300">2. Métricas de Benchmark Alcançadas</h2>
+<div class="grid grid-cols-3 gap-3">
+<div class="bg-black/30 border border-white/10 rounded-xl p-3 text-center">
+<div class="text-[10px] uppercase text-white/50">Tempo de Frame</div>
+<div class="text-lg font-bold font-mono text-emerald-400">4.12 ms</div>
+<div class="text-[10px] text-emerald-300">↓ 68% vs WebGL1</div>
+</div>
+<div class="bg-black/30 border border-white/10 rounded-xl p-3 text-center">
+<div class="text-[10px] uppercase text-white/50">Uso VRAM</div>
+<div class="text-lg font-bold font-mono text-cyan-400">340 MB</div>
+<div class="text-[10px] text-cyan-300">Zero vazamento</div>
+</div>
+<div class="bg-black/30 border border-white/10 rounded-xl p-3 text-center">
+<div class="text-[10px] uppercase text-white/50">Taxa de Atualização</div>
+<div class="text-lg font-bold font-mono text-blue-400">144 Hz</div>
+<div class="text-[10px] text-blue-300">Estável e travado</div>
+</div>
+</div>
+</section>
+</div>
+</section>
+<!-- PARTE C) DIREITA: Visualização em Lista dos Anexos com Tabs (Detalhes, Anexos, Relações) -->
+<section class="w-80 flex-shrink-0 flex flex-col border-l border-white/10 transition-all duration-300 bg-transparent" data-purpose="attachments-sidebar-list" id="cardSidebarPanel"><div class="p-2 border-b border-white/10 bg-white/[0.02]"><div class="flex items-center space-x-1 bg-black/40 p-1 rounded-xl border border-white/10" role="tablist"><button class="flex-1 py-1 px-1.5 rounded-lg text-[10px] font-medium transition flex items-center justify-center space-x-1 bg-cyan-500/30 text-cyan-200 border border-cyan-400/40 shadow-sm" id="tabBtnDetails" onclick="switchSidebarTab('details')" title="Detalhes do anexo atual"><span class="">ℹ️</span><span class="truncate font-semibold">Detalhes</span></button><button class="flex-1 py-1 px-1.5 rounded-lg text-[10px] font-medium transition flex items-center justify-center space-x-1 text-slate-400 hover:text-white hover:bg-white/5 border border-transparent" id="tabBtnAttachments" onclick="switchSidebarTab('attachments')" title="Anexos do card"><span class="">📎</span><span class="truncate">Anexos (4)</span></button><button class="flex-1 py-1 px-1.5 rounded-lg text-[10px] font-medium transition flex items-center justify-center space-x-1 text-slate-400 hover:text-white hover:bg-white/5 border border-transparent" id="tabBtnRelations" onclick="switchSidebarTab('relations')" title="Relações e citações"><span class="">🔗</span><span class="truncate">Relações</span></button></div></div><div class="flex-1 overflow-y-auto min-h-0 text-xs" id="sidebarTabContents"><div class="p-3 space-y-3" id="sidebarViewDetails"><div class="p-2.5 rounded-xl bg-cyan-500/15 border border-cyan-400/40 flex flex-col gap-2"><div class="flex items-start justify-between"><div class="flex items-center space-x-2 truncate"><span class="text-lg">📄</span><div class="truncate"><div class="font-bold text-cyan-200 truncate">SPEC_ENGINE_v2.md</div><div class="text-[10px] text-cyan-300/80 font-mono">Documento Markdown • v2.4</div></div></div><span class="text-[9px] bg-cyan-400/20 text-cyan-300 px-1.5 py-0.5 rounded font-mono border border-cyan-400/30">Ativo</span></div><div class="grid grid-cols-2 gap-2 pt-2 border-t border-cyan-400/20 text-[10px]"><div><span class="text-white/40 block">Tamanho</span><span class="font-mono text-slate-200 font-medium">42.8 KB</span></div><div><span class="text-white/40 block">Última Edição</span><span class="text-slate-200 font-medium">Há 2h (Helena Vaz)</span></div><div><span class="text-white/40 block">Autor Original</span><span class="text-slate-200 font-medium">José G. Gruber</span></div><div><span class="text-white/40 block">Permissão</span><span class="text-emerald-300 font-medium">Read / Write (RBAC)</span></div></div></div><div class="space-y-1.5 bg-black/30 p-2.5 rounded-xl border border-white/10"><div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1 flex items-center justify-between"><span class="">Segurança &amp; Integridade</span><span class="text-emerald-400 font-mono text-[9px]">● Verificado</span></div><div class="text-[10px] font-mono text-slate-300 break-all bg-slate-950/80 p-1.5 rounded border border-white/5"><span class="text-white/40 block text-[9px] uppercase">Hash SHA-256</span>8f4e2a9b...7c31dd04e</div><div class="flex items-center justify-between text-[10px] pt-1 text-white/50"><span class="font-mono text-[10px]">S3 Bucket Sync:</span><span class="text-cyan-300 font-mono">us-east-1 // proj-core</span></div></div><div class="space-y-1.5"><div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Tags Associadas</div><div class="flex flex-wrap gap-1.5"><span class="text-[9px] px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-300 border border-purple-400/30 font-mono">webgpu</span><span class="text-[9px] px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 font-mono">simd-onnx</span><span class="text-[9px] px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 font-mono">pipeline-v2</span><span class="text-[9px] px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-400/30 font-mono">vram-opt</span></div></div><div class="space-y-1.5"><div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Histórico de Revisões</div><div class="space-y-1 font-mono text-[10px]"><div class="flex items-center justify-between p-1.5 rounded-lg bg-white/[0.03] border border-white/5"><span class="text-cyan-300 font-bold">v2.4 (atual)</span><span class="text-slate-400 font-sans text-[10px]">Flags de Shader</span><span class="text-white/30 text-[9px]">Hoje</span></div><div class="flex items-center justify-between p-1.5 rounded-lg bg-white/[0.02] border border-white/5 text-white/50"><span class="font-semibold">v2.3</span><span class="text-slate-400 font-sans text-[10px]">Buffer SIMD WebGL</span><span class="text-white/30 text-[9px]">Ontem</span></div><div class="flex items-center justify-between p-1.5 rounded-lg bg-white/[0.02] border border-white/5 text-white/50"><span class="font-semibold">v2.0</span><span class="text-slate-400 font-sans text-[10px]">Draft inicial WGSL</span><span class="text-white/30 text-[9px]">11 Out</span></div></div></div><div class="pt-2 border-t border-white/10 flex flex-col gap-1.5"><button class="w-full py-1.5 px-2 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-200 text-xs font-medium flex items-center justify-center space-x-1.5 transition shadow-sm"><span class="">⬇</span><span class="">Baixar Arquivo</span></button><div class="grid grid-cols-2 gap-1.5"><button class="py-1 px-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white text-[10px] transition flex items-center justify-center space-x-1"><span class="">🔗</span><span class="">Copiar Link</span></button><button class="py-1 px-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white text-[10px] transition flex items-center justify-center space-x-1"><span class="">📜</span><span class="">Commits</span></button></div></div></div><div class="p-2 space-y-2 hidden" id="sidebarViewAttachments"><div class="flex items-center justify-between px-1 pb-1"><span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Arquivos Vinculados</span><button class="text-cyan-300 hover:text-cyan-200 text-xs font-semibold" title="Fazer Upload de Novo Anexo">+ Anexar</button></div><div class="p-2.5 rounded-xl bg-cyan-500/15 border border-cyan-400/40 flex flex-col space-y-1.5 group"><div class="flex items-start justify-between"><div class="flex items-center space-x-2 truncate"><span class="text-base">📄</span><div class="truncate"><div class="font-semibold text-cyan-200 truncate">SPEC_ENGINE_v2.md</div><div class="text-[10px] text-white/60">42.8 KB • Markdown</div></div></div><span class="text-[9px] bg-cyan-400/20 text-cyan-300 px-1.5 py-0.2 rounded font-mono">Ativo</span></div><div class="flex items-center justify-between text-[10px] text-white/50 pt-1 border-t border-cyan-400/20"><span class="">Helena Vaz • Hoje 09:20</span><div class="flex space-x-1"><button class="hover:text-cyan-300" title="Baixar">⬇</button><button class="hover:text-cyan-300" title="Compartilhar">🔗</button></div></div></div><div class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex flex-col space-y-1.5 transition cursor-pointer group"><div class="flex items-start justify-between"><div class="flex items-center space-x-2 truncate"><span class="text-base text-rose-400">🖼️</span><div class="truncate"><div class="font-semibold text-white group-hover:text-cyan-300 truncate">Render_Mockup.png</div><div class="text-[10px] text-white/50">4.8 MB • Imagem 4K</div></div></div></div><div class="flex items-center justify-between text-[10px] text-white/50 pt-1 border-t border-white/5"><span class="">Design Team • Ontem</span><div class="flex space-x-1"><button class="hover:text-cyan-300" title="Baixar">⬇</button><button class="hover:text-cyan-300" title="Compartilhar">🔗</button></div></div></div><div class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex flex-col space-y-1.5 transition cursor-pointer group"><div class="flex items-start justify-between"><div class="flex items-center space-x-2 truncate"><span class="text-base text-amber-400">⚡</span><div class="truncate"><div class="font-semibold text-white group-hover:text-cyan-300 truncate">Architecture_Diagram.svg</div><div class="text-[10px] text-white/50">410 KB • Vetorial</div></div></div></div><div class="flex items-center justify-between text-[10px] text-white/50 pt-1 border-t border-white/5"><span class="">Helena Vaz • Ontem</span><div class="flex space-x-1"><button class="hover:text-cyan-300" title="Baixar">⬇</button><button class="hover:text-cyan-300" title="Compartilhar">🔗</button></div></div></div><div class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex flex-col space-y-1.5 transition cursor-pointer group"><div class="flex items-start justify-between"><div class="flex items-center space-x-2 truncate"><span class="text-base text-emerald-400">📊</span><div class="truncate"><div class="font-semibold text-white group-hover:text-cyan-300 truncate">Benchmark_Results.csv</div><div class="text-[10px] text-white/50">182 KB • Tabela</div></div></div></div><div class="flex items-center justify-between text-[10px] text-white/50 pt-1 border-t border-white/5"><span class="">Carlos Mendes • 12 Out</span><div class="flex space-x-1"><button class="hover:text-cyan-300" title="Baixar">⬇</button><button class="hover:text-cyan-300" title="Compartilhar">🔗</button></div></div></div></div><div class="p-3 space-y-3 hidden" id="sidebarViewRelations">
+<div class="flex items-center justify-between px-1">
+<span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Grafo &amp; Relações</span>
+<span class="text-[10px] font-mono text-cyan-300">SPEC_ENGINE_v2.md</span>
+</div>
+<!-- Grupo 1: Anexos Citados / Dependências -->
+<div class="space-y-1.5">
+<div class="text-[10px] font-semibold text-cyan-300 uppercase tracking-wider px-1 flex items-center gap-1.5">
+<span class="">↘</span> Anexos Citados (Dependências)
+    </div>
+<div class="space-y-1.5">
+<div class="p-2 rounded-xl bg-white/[0.03] border border-white/10 hover:border-cyan-400/40 transition">
+<div class="flex items-center justify-between">
+<span class="text-xs font-medium text-white flex items-center gap-1.5">
+<span class="text-amber-400">⚡</span> Architecture_Diagram.svg
+          </span>
+<span class="text-[9px] px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 font-mono">Referência direta</span>
+</div>
+<p class="text-[10px] text-white/40 mt-1">Seção 1.2 • Diagrama de fluxo de pipeline SIMD</p>
+</div>
+<div class="p-2 rounded-xl bg-white/[0.03] border border-white/10 hover:border-cyan-400/40 transition">
+<div class="flex items-center justify-between">
+<span class="text-xs font-medium text-white flex items-center gap-1.5">
+<span class="text-purple-400">📄</span> neural_weights_spec.json
+          </span>
+<span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-mono">Importação esquema</span>
+</div>
+<p class="text-[10px] text-white/40 mt-1">Header WGSL layout de buffers normalizados</p>
+</div>
+</div>
+</div>
+<!-- Grupo 2: Citado por (Backlinks) -->
+<div class="space-y-1.5 pt-1">
+<div class="text-[10px] font-semibold text-emerald-300 uppercase tracking-wider px-1 flex items-center gap-1.5">
+<span class="">↖</span> Citado por (Backlinks)
+    </div>
+<div class="space-y-1.5">
+<div class="p-2 rounded-xl bg-white/[0.03] border border-white/10 hover:border-emerald-400/40 transition">
+<div class="flex items-center justify-between">
+<span class="text-xs font-medium text-white flex items-center gap-1.5">
+<span class="text-emerald-400">📊</span> Benchmark_Results.csv
+          </span>
+<span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono">Base de teste</span>
+</div>
+<p class="text-[10px] text-white/40 mt-1">Linha base de inferência calculada com base na v2.4</p>
+</div>
+<div class="p-2 rounded-xl bg-white/[0.03] border border-white/10 hover:border-emerald-400/40 transition">
+<div class="flex items-center justify-between">
+<span class="text-xs font-medium text-white flex items-center gap-1.5">
+<span class="text-rose-400">🖼️</span> Render_Mockup.png
+          </span>
+<span class="text-[9px] px-1.5 py-0.2 rounded bg-white/10 text-white/70 font-mono">Validação visual</span>
+</div>
+<p class="text-[10px] text-white/40 mt-1">Protótipo gráfico dos buffers rasterizados</p>
+</div>
+</div>
+</div>
+<!-- Grupo 3: Cards & Tarefas Relacionadas -->
+<div class="space-y-1.5 pt-1">
+<div class="text-[10px] font-semibold text-amber-300 uppercase tracking-wider px-1 flex items-center gap-1.5">
+<span class="">↔</span> Cards &amp; Tarefas Vinculadas
+    </div>
+<div class="space-y-1.5">
+<div class="p-2 rounded-xl bg-black/30 border border-white/10 hover:border-cyan-400/30 transition cursor-pointer">
+<div class="flex items-center justify-between">
+<span class="font-mono text-cyan-300 text-[11px] font-bold">TASK-112</span>
+<span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-mono">Dependência técnica</span>
+</div>
+<div class="text-xs text-slate-200 font-medium mt-0.5">Suporte nativo a WebGPU compute shaders</div>
+</div>
+<div class="p-2 rounded-xl bg-black/30 border border-white/10 hover:border-cyan-400/30 transition cursor-pointer">
+<div class="flex items-center justify-between">
+<span class="font-mono text-blue-300 text-[11px] font-bold">TASK-082</span>
+<span class="text-[9px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 font-mono">Token RBAC</span>
+</div>
+<div class="text-xs text-slate-200 font-medium mt-0.5">Refatoração Auth &amp; Handshake OIDC</div>
+</div>
+</div>
+</div>
+</div></div><div class="p-2.5 bg-black/40 border-t border-white/10 text-[11px] text-slate-400 flex items-center justify-between"><span class="truncate">4 arquivos vinculados</span><span class="text-cyan-400 font-mono flex-shrink-0">S3 Sincronizado</span></div><script>function switchSidebarTab(tabName) { const views = { details: document.getElementById('sidebarViewDetails'), attachments: document.getElementById('sidebarViewAttachments'), relations: document.getElementById('sidebarViewRelations') }; const btns = { details: document.getElementById('tabBtnDetails'), attachments: document.getElementById('tabBtnAttachments'), relations: document.getElementById('tabBtnRelations') }; Object.keys(views).forEach(k => { if (views[k]) { if (k === tabName) { views[k].classList.remove('hidden'); } else { views[k].classList.add('hidden'); } } }); Object.keys(btns).forEach(k => { if (btns[k]) { if (k === tabName) { btns[k].className = 'flex-1 py-1 px-1.5 rounded-lg text-[10px] font-medium transition flex items-center justify-center space-x-1 bg-cyan-500/30 text-cyan-200 border border-cyan-400/40 shadow-sm'; } else { btns[k].className = 'flex-1 py-1 px-1.5 rounded-lg text-[10px] font-medium transition flex items-center justify-center space-x-1 text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'; } } }); }</script></section>
+</div>
+</div>
+<!-- END: CardDetailsWindow -->
+</main>
+<!-- END: DesktopWorkspace -->
+<!-- BEGIN: BottomTaskbar -->
+<!-- BARRA DE TAREFAS FIXA INFERIOR (HORIZONTAL) -->
+<!-- BEGIN: ProjThreadStartMenu -->
+<div class="fixed bottom-16 left-3 z-50 w-[780px] h-[550px] max-w-[calc(100vw-1.5rem)] rounded-2xl overflow-hidden shadow-2xl border border-cyan-400/40 flex flex-row animate-fade-in backdrop-blur-2xl transition-all duration-200 hidden" data-purpose="start-menu-popup" id="projThreadStartMenu" style="box-shadow: rgba(0, 0, 0, 0.85) 0px 20px 50px -10px, rgba(34, 211, 238, 0.25) 0px 0px 25px -4px;">
+<!-- DIVISÃO ESQUERDA: NAVEGAÇÃO, PROJETOS FAVORITOS & DEEP WORKSPACE EXPLORER -->
+<div class="w-[440px] flex-shrink-0 flex flex-col bg-[#0d1320]/95 border-r border-white/10 backdrop-blur-md">
+<!-- Topo Esquerdo: Barra de Busca & Status do Cluster -->
+<div class="p-3.5 border-b border-white/10 bg-slate-950/50 flex flex-col gap-2.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="h-2 w-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee] animate-pulse"></span>
+<span class="text-[11px] font-mono font-bold tracking-wider text-cyan-300 uppercase">ProjThread Launcher</span>
+</div>
+<span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-950/80 text-cyan-300 border border-cyan-500/30">Workspace Holográfico #1</span>
+</div>
+<div class="relative flex items-center">
+<input class="w-full bg-slate-900/90 border border-white/15 focus:border-cyan-400 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-cyan-400 font-sans shadow-inner" placeholder="Pesquisa profunda em cards, anexos e nós..." type="text">
+<span class="absolute left-2.5 text-slate-400 text-xs">🔍</span>
+</div>
+</div>
+<!-- Miolo Esquerdo com Scroll: Projetos Favoritos + Subitens + Explorer -->
+<div class="flex-1 overflow-y-auto p-3 space-y-4 text-xs no-scrollbar">
+<!-- Seção: Projetos Favoritos (Pinned) & Cards Favoritos -->
+<div>
+<div class="flex items-center justify-between mb-2 px-1">
+<span class="text-[10px] font-bold uppercase tracking-wider text-cyan-300/90 flex items-center gap-1.5">
+<span class="">⭐</span> Projetos Favoritos (Pinned)
+          </span>
+<button class="text-[10px] text-slate-400 hover:text-cyan-300 font-mono transition" title="Organizar favoritos">Editar</button>
+</div>
+<!-- Card Projeto Favorito 1 (Expandido) -->
+<div class="rounded-xl bg-white/[0.04] border border-cyan-500/20 p-2.5 space-y-2 mb-2 hover:border-cyan-400/40 transition">
+<div class="flex items-center justify-between cursor-pointer">
+<div class="flex items-center space-x-2">
+<div class="w-6 h-6 rounded-lg bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center text-cyan-300 font-mono font-bold text-xs">PR</div>
+<div>
+<h4 class="text-xs font-semibold text-white flex items-center gap-1.5">
+                  ProjThread Core Engine
+                  <span class="text-[9px] font-mono px-1 rounded bg-cyan-400/20 text-cyan-300 border border-cyan-400/30">Ativo</span>
+</h4>
+<p class="text-[10px] text-slate-400">Cluster Alpha-7 • 18 cards</p>
+</div>
+</div>
+<span class="text-slate-400 text-xs transform rotate-90">▾</span>
+</div>
+<!-- Cards Favoritos Aninhados no Projeto -->
+<div class="pl-3 ml-3 border-l-2 border-cyan-400/30 space-y-1.5 pt-1">
+<div class="flex items-center justify-between py-1 px-2 rounded-lg bg-slate-900/60 hover:bg-cyan-500/15 text-slate-200 hover:text-white cursor-pointer transition text-[11px] group">
+<div class="flex items-center space-x-1.5 truncate">
+<span class="text-cyan-300 font-mono text-[10px]">TASK-104</span>
+<span class="truncate text-slate-200 group-hover:text-cyan-200">Renderização Neural SIMD</span>
+</div>
+<span class="text-[9px] px-1.5 py-0.2 rounded bg-cyan-500/30 text-cyan-200 font-mono">Em Foco</span>
+</div>
+<div class="flex items-center justify-between py-1 px-2 rounded-lg bg-slate-900/60 hover:bg-cyan-500/15 text-slate-200 hover:text-white cursor-pointer transition text-[11px] group">
+<div class="flex items-center space-x-1.5 truncate">
+<span class="text-blue-300 font-mono text-[10px]">TASK-082</span>
+<span class="truncate text-slate-200 group-hover:text-cyan-200">Handshake OIDC Auth</span>
+</div>
+<span class="text-[9px] px-1.5 py-0.2 rounded bg-blue-500/30 text-blue-200 font-mono">Dev</span>
+</div>
+<div class="flex items-center justify-between py-1 px-2 rounded-lg bg-slate-900/60 hover:bg-cyan-500/15 text-slate-200 hover:text-white cursor-pointer transition text-[11px] group">
+<div class="flex items-center space-x-1.5 truncate">
+<span class="text-purple-300 font-mono text-[10px]">TASK-112</span>
+<span class="truncate text-slate-200 group-hover:text-cyan-200">Compute Shaders WebGPU</span>
+</div>
+<span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/30 text-purple-200 font-mono">Ideia</span>
+</div>
+</div>
+</div>
+<!-- Card Projeto Favorito 2 -->
+<div class="rounded-xl bg-white/[0.02] border border-white/10 p-2 flex items-center justify-between hover:bg-white/[0.05] hover:border-white/20 transition cursor-pointer group">
+<div class="flex items-center space-x-2">
+<div class="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-300 font-mono font-bold text-xs">DS</div>
+<div>
+<h4 class="text-xs font-semibold text-slate-200 group-hover:text-white">Neon Design System 2.0</h4>
+<p class="text-[10px] text-slate-400">Biblioteca de Componentes Translúcidos</p>
+</div>
+</div>
+<span class="text-slate-500 text-xs group-hover:text-slate-300">▸</span>
+</div>
+</div>
+<!-- Seção: Deep Workspace Explorer com Toggle de Filtro e Árvore de Subprojetos -->
+<div class="pt-2 border-t border-white/10">
+<div class="flex items-center justify-between mb-2 px-1">
+<span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+<span class="">📂</span> Deep Workspace Explorer
+          </span>
+<!-- Toggle de Filtro Rápido -->
+<div class="flex items-center space-x-1 bg-black/40 p-0.5 rounded-lg border border-white/10 text-[10px]">
+<button class="px-1.5 py-0.5 rounded bg-cyan-500/30 text-cyan-200 border border-cyan-400/40 font-medium">Cards &amp; Anexos ⭐</button>
+<button class="px-1.5 py-0.5 rounded text-slate-400 hover:text-white transition">Todos</button>
+</div>
+</div>
+<!-- Árvore / Hierarquia de Subprojetos e Anexos -->
+<div class="space-y-1 font-mono text-[11px] bg-black/30 p-2.5 rounded-xl border border-white/5">
+<!-- Breadcrumb de Navegação Profunda -->
+<div class="flex items-center space-x-1 text-[10px] text-slate-400 pb-1.5 mb-1.5 border-b border-white/5 truncate">
+<span class="text-cyan-400">workspace-alpha</span>
+<span class="">/</span>
+<span class="text-slate-300">sub-pipelines</span>
+<span class="">/</span>
+<span class="text-emerald-300">vram-opt</span>
+</div>
+<!-- Itens da Árvore Drill-down -->
+<div class="flex items-center justify-between py-1 px-2 rounded hover:bg-white/5 text-slate-300 hover:text-white cursor-pointer transition">
+<div class="flex items-center space-x-2 truncate">
+<span class="text-amber-400">📁</span>
+<span class="truncate">shaders/compute/</span>
+</div>
+<span class="text-[9px] text-slate-500 font-sans">4 subprojetos</span>
+</div>
+<div class="flex items-center justify-between py-1 px-2 rounded hover:bg-white/5 text-slate-300 hover:text-white cursor-pointer transition">
+<div class="flex items-center space-x-2 truncate">
+<span class="text-cyan-400">📄</span>
+<span class="truncate text-cyan-200 font-sans">SPEC_ENGINE_v2.md</span>
+</div>
+<span class="text-[9px] text-cyan-400/80 font-mono">34 KB</span>
+</div>
+<div class="flex items-center justify-between py-1 px-2 rounded hover:bg-white/5 text-slate-300 hover:text-white cursor-pointer transition">
+<div class="flex items-center space-x-2 truncate">
+<span class="text-rose-400">🖼️</span>
+<span class="truncate font-sans">Render_Mockup.png</span>
+</div>
+<span class="text-[9px] text-slate-400 font-mono">4.8 MB</span>
+</div>
+<div class="flex items-center justify-between py-1 px-2 rounded hover:bg-white/5 text-slate-300 hover:text-white cursor-pointer transition">
+<div class="flex items-center space-x-2 truncate">
+<span class="text-emerald-400">📊</span>
+<span class="truncate font-sans">Benchmark_Results.csv</span>
+</div>
+<span class="text-[9px] text-slate-400 font-mono">182 KB</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- DIVISÃO DIREITA: CONFIGURAÇÕES TRANSLÚCIDAS, PERFIL & AÇÕES DE CONTA -->
+<div class="flex-1 flex flex-col bg-slate-900/60 backdrop-blur-2xl glass-morphism border-0">
+<!-- Topo Direito: Título da Central de Controle -->
+<div class="px-4 py-3.5 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
+<div>
+<h3 class="text-xs font-bold uppercase tracking-wider text-slate-200 flex items-center gap-1.5">
+<span class="">⚙️</span> Painel de Configurações
+        </h3>
+<p class="text-[10px] text-white/50">Atalhos Rápidos de Sistema &amp; Governança</p>
+</div>
+<button class="w-6 h-6 rounded-lg bg-white/5 hover:bg-rose-500/80 text-slate-400 hover:text-white flex items-center justify-center transition text-xs" onclick="const m = document.getElementById('projThreadStartMenu'); if(m) { m.classList.add('hidden'); }" title="Fechar Menu">
+        ✕
+      </button>
+</div>
+<!-- Seção Superior: Atalhos Diretos para Seções de Configurações -->
+<div class="flex-1 p-4 overflow-y-auto space-y-2 no-scrollbar">
+<!-- Atalho 1: Workspace & Clusters -->
+<div class="p-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 hover:border-cyan-400/40 transition cursor-pointer flex items-center justify-between group">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center text-cyan-300 text-sm group-hover:scale-105 transition">
+            🌐
+          </div>
+<div>
+<h4 class="text-xs font-semibold text-slate-200 group-hover:text-cyan-200 transition">Workspace &amp; Ambientes</h4>
+<p class="text-[10px] text-slate-400">Topologia de clusters, nós Edge e distribuição K3s</p>
+</div>
+</div>
+<span class="text-slate-500 text-xs group-hover:text-cyan-300 group-hover:translate-x-0.5 transition">→</span>
+</div>
+<!-- Atalho 2: Aparência & Holografia -->
+<div class="p-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 hover:border-purple-400/40 transition cursor-pointer flex items-center justify-between group">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-lg bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-300 text-sm group-hover:scale-105 transition">
+            ✨
+          </div>
+<div>
+<h4 class="text-xs font-semibold text-slate-200 group-hover:text-purple-200 transition">Aparência &amp; Holografia</h4>
+<p class="text-[10px] text-slate-400">Desfoque translúcido, iluminação de bordas e temas</p>
+</div>
+</div>
+<span class="text-slate-500 text-xs group-hover:text-purple-300 group-hover:translate-x-0.5 transition">→</span>
+</div>
+<!-- Atalho 3: Memória & Cache WASM L2 -->
+<div class="p-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 hover:border-emerald-400/40 transition cursor-pointer flex items-center justify-between group">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-300 text-sm group-hover:scale-105 transition">
+            ⚡
+          </div>
+<div>
+<h4 class="text-xs font-semibold text-slate-200 group-hover:text-emerald-200 transition">Memória &amp; Cache WASM</h4>
+<p class="text-[10px] text-slate-400">Alocação de buffers VRAM, limites de L2 e cold boot</p>
+</div>
+</div>
+<span class="text-slate-500 text-xs group-hover:text-emerald-300 group-hover:translate-x-0.5 transition">→</span>
+</div>
+<!-- Atalho 4: Integrações & Webhooks -->
+<div class="p-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 hover:border-blue-400/40 transition cursor-pointer flex items-center justify-between group">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-lg bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-blue-300 text-sm group-hover:scale-105 transition">
+            🔌
+          </div>
+<div>
+<h4 class="text-xs font-semibold text-slate-200 group-hover:text-blue-200 transition">Integrações &amp; Webhooks</h4>
+<p class="text-[10px] text-slate-400">GitHub, Docker Registry, ONNX SIMD e S3 Sync</p>
+</div>
+</div>
+<span class="text-slate-500 text-xs group-hover:text-blue-300 group-hover:translate-x-0.5 transition">→</span>
+</div>
+<!-- Atalho 5: Permissões & Equipe -->
+<div class="p-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 hover:border-amber-400/40 transition cursor-pointer flex items-center justify-between group">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-400/30 flex items-center justify-center text-amber-300 text-sm group-hover:scale-105 transition">
+            🛡️
+          </div>
+<div>
+<h4 class="text-xs font-semibold text-slate-200 group-hover:text-amber-200 transition">Permissões &amp; Equipe</h4>
+<p class="text-[10px] text-slate-400">RBAC, chaves criptográficas e federação OIDC</p>
+</div>
+</div>
+<span class="text-slate-500 text-xs group-hover:text-amber-300 group-hover:translate-x-0.5 transition">→</span>
+</div>
+</div>
+<!-- Seção Inferior Direita: Ações do Usuário & Ações da Conta -->
+<div class="p-3.5 border-t border-white/10 bg-black/40 space-y-3">
+<!-- Cartão de Perfil do Usuário Logado -->
+<div class="flex items-center justify-between p-2 rounded-xl bg-cyan-950/40 border border-cyan-400/40 shadow-glow-cyan"><div class="flex items-center space-x-2.5"><div class="relative"><div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-600 to-teal-400 flex items-center justify-center font-bold text-white text-xs shadow-md ring-2 ring-cyan-400 shadow-[0_0_8px_#22d3ee]">JG</div><span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-slate-900 shadow-[0_0_6px_#22d3ee]"></span></div><div><div class="text-xs font-bold text-white flex items-center gap-1.5">José G. Gruber <span class="text-[9px] px-1.5 py-0.2 rounded-full bg-cyan-400/20 text-cyan-200 font-mono font-normal border border-cyan-400/40">Manager</span></div><div class="text-[10px] text-cyan-200/80 font-mono">jose.gruber@projthread.io</div></div></div><button class="px-2.5 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-200 border border-cyan-400/30 text-[11px] font-medium transition shadow-sm" title="Ver Perfil do Usuário">Perfil</button></div>
+<!-- Botões de Ações de Conta & Sessão -->
+<div class="grid grid-cols-3 gap-1.5 pt-1">
+<button class="px-2 py-1.5 rounded-lg bg-white/5 hover:bg-cyan-500/20 hover:text-cyan-200 border border-white/10 hover:border-cyan-400/30 text-slate-300 text-[10px] font-medium transition flex items-center justify-center space-x-1" title="Alternar Espaço">
+<span class="">🔄</span>
+<span class="">Trocar Espaço</span>
+</button>
+<button class="px-2 py-1.5 rounded-lg bg-white/5 hover:bg-amber-500/20 hover:text-amber-200 border border-white/10 hover:border-amber-400/30 text-slate-300 text-[10px] font-medium transition flex items-center justify-center space-x-1" title="Bloquear Tela">
+<span class="">🔒</span>
+<span class="">Bloquear</span>
+</button>
+<button class="px-2 py-1.5 rounded-lg bg-white/5 hover:bg-rose-500/20 hover:text-rose-200 border border-white/10 hover:border-rose-400/30 text-slate-300 text-[10px] font-medium transition flex items-center justify-center space-x-1" title="Encerrar Sessão">
+<span class="">⏻</span>
+<span class="">Encerrar</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- END: ProjThreadStartMenu --><footer class="fixed bottom-0 left-0 right-0 h-13 py-1.5 px-3 bg-slate-950/80 backdrop-blur-xl border-t border-white/15 z-50 flex items-center justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.6)]" data-purpose="desktop-taskbar">
+<!-- LADO ESQUERDO: Menu Principal & Workspaces -->
+<div class="flex items-center space-x-3">
+<!-- Botão Menu Principal ProjThread -->
+<button class="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500/20 to-blue-600/20 hover:from-cyan-500/40 hover:to-blue-600/40 border border-cyan-400/40 text-white font-bold text-xs tracking-wider transition group shadow-sm ring-2 ring-cyan-400" id="btnStartMenu" onclick="const m = document.getElementById('projThreadStartMenu'); if(m) { m.classList.toggle('hidden'); }">
+<div class="w-5 h-5 rounded-md bg-cyan-400 flex items-center justify-center text-slate-950 font-black text-xs group-hover:rotate-12 transition transform shadow">
+          PT
+        </div>
+<span class="text-cyan-200 group-hover:text-white">ProjThread</span>
+</button>
+<div class="h-5 w-[1px] bg-white/15"></div>
+<!-- Seletor de Áreas de Trabalho (Workspaces 1 a 4) -->
+<div class="flex items-center space-x-1 bg-black/40 p-1 rounded-xl border border-white/10" data-purpose="workspace-selector">
+<button class="ws-btn w-7 h-7 rounded-lg bg-cyan-500 text-slate-950 font-mono font-bold text-xs shadow-glow-cyan transition" data-workspace="1">
+          1
+        </button>
+<button class="ws-btn w-7 h-7 rounded-lg hover:bg-white/10 text-white/70 hover:text-white font-mono text-xs transition" data-workspace="2">
+          2
+        </button>
+<button class="ws-btn w-7 h-7 rounded-lg hover:bg-white/10 text-white/70 hover:text-white font-mono text-xs transition" data-workspace="3">
+          3
+        </button>
+<button class="ws-btn w-7 h-7 rounded-lg hover:bg-white/10 text-white/70 hover:text-white font-mono text-xs transition" data-workspace="4">
+          4
+        </button>
+</div>
+</div>
+<!-- CENTRO: Listagem das Janelas Abertas (Horizontal com rolagem suave) -->
+<div class="flex-1 max-w-3xl mx-4 flex items-center space-x-2 overflow-x-auto py-0.5 no-scrollbar" data-purpose="open-windows-list">
+<!-- Janela Ativa em Destaque -->
+<button class="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-slate-800/90 border border-cyan-400/60 text-white text-xs font-medium shadow-glow-cyan flex-shrink-0 transition">
+<span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+<span class="text-cyan-300 font-mono font-bold">TASK-104:</span>
+<span class="truncate max-w-[190px]">Integração Pipelines</span>
+<span class="text-[10px] bg-cyan-400/20 text-cyan-300 px-1.5 rounded">Ativa</span>
+</button>
+<!-- Janela 2 -->
+<button class="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-slate-300 hover:text-white text-xs flex-shrink-0 transition">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+<span class="text-blue-300 font-mono">TASK-082:</span>
+<span class="truncate max-w-[140px]">Refatoração Auth</span>
+</button>
+<!-- Janela 3 -->
+<button class="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-slate-300 hover:text-white text-xs flex-shrink-0 transition">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+<span class="text-emerald-300 font-mono">Terminal:</span>
+<span class="truncate max-w-[140px]">build-worker-01</span>
+</button>
+<!-- Janela 4 -->
+<button class="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-slate-300 hover:text-white text-xs flex-shrink-0 transition">
+<span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+<span class="truncate max-w-[150px]">Analytics Dashboard</span>
+</button>
+</div>
+<!-- LADO DIREITO: Notificações, Status do Sistema & Relógio -->
+<div class="flex items-center space-x-3 text-xs">
+<!-- Indicadores de Status & Notificação -->
+<div class="flex items-center space-x-2 text-slate-300">
+<div class="flex items-center space-x-1 px-2 py-1 rounded-lg bg-black/30 border border-white/10" title="Conexão do Sistema">
+<svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="text-[11px] font-mono text-emerald-300">10 Gbps</span>
+</div>
+<button class="relative p-1.5 rounded-lg bg-black/30 hover:bg-white/10 border border-white/10 transition" title="Central de Notificações">
+<svg class="w-3.5 h-3.5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_6px_#22d3ee]"></span>
+</button>
+</div>
+<div class="h-5 w-[1px] bg-white/15"></div>
+<!-- Bloco de Data e Hora -->
+<div class="px-2.5 py-1 rounded-xl bg-slate-900/80 border border-white/10 flex items-center space-x-2 text-right">
+<div>
+<div class="font-bold font-mono text-white text-xs tracking-tight" id="desktopClock">13:59</div>
+<div class="text-[10px] text-cyan-200/80">Seg, 14 Out</div>
+</div>
+</div>
+</div>
+</footer>
+<!-- END: BottomTaskbar -->
+<!-- BEGIN: InteractiveScripts -->
+<!-- Microinteratividades Vanilla: Bandejas, Abas, Disposição de Janela e Relógio Dinâmico -->
+<script data-purpose="desktop-interactions">
+    // Funções de alternância de abas da Bandeja Esquerda
+    function switchLeftTab(tabName) {
+      const tabs = {
+        chat: document.getElementById('leftTabChat'),
+        projects: document.getElementById('leftTabProjects'),
+        members: document.getElementById('leftTabMembers')
+      };
+      const btns = {
+        chat: document.getElementById('tabBtnChat'),
+        projects: document.getElementById('tabBtnProjects'),
+        members: document.getElementById('tabBtnMembers')
+      };
+
+      Object.keys(tabs).forEach(k => {
+        if (tabs[k]) {
+          if (k === tabName) {
+            tabs[k].classList.remove('hidden');
+          } else {
+            tabs[k].classList.add('hidden');
+          }
+        }
+      });
+
+      Object.keys(btns).forEach(k => {
+        if (btns[k]) {
+          if (k === tabName) {
+            btns[k].className = 'flex-1 py-1 px-1.5 rounded-lg text-[10px] font-medium transition flex items-center justify-center space-x-1 bg-cyan-500/30 text-cyan-200 border border-cyan-400/40 shadow-sm';
+            const spanText = btns[k].querySelector('span:nth-child(2)');
+            if (spanText) spanText.classList.add('font-semibold');
+          } else {
+            btns[k].className = 'flex-1 py-1 px-1.5 rounded-lg text-[10px] font-medium transition flex items-center justify-center space-x-1 text-slate-400 hover:text-white hover:bg-white/5 border border-transparent';
+            const spanText = btns[k].querySelector('span:nth-child(2)');
+            if (spanText) spanText.classList.remove('font-semibold');
+          }
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Controle da Bandeja Esquerda (Colapsar / Expandir)
+      const btnToggleLeft = document.getElementById('btnToggleLeftSidebar');
+      const leftTray = document.getElementById('leftTraySection');
+      const labelToggleLeft = document.getElementById('labelToggleLeftSidebar');
+      let leftVisible = true;
+
+      if (btnToggleLeft && leftTray) {
+        btnToggleLeft.addEventListener('click', () => {
+          leftVisible = !leftVisible;
+          if (leftVisible) {
+            leftTray.classList.remove('hidden');
+            if (labelToggleLeft) labelToggleLeft.textContent = 'Bandeja Esq.';
+            btnToggleLeft.className = 'px-2.5 py-1 rounded bg-cyan-500/25 hover:bg-cyan-500/35 text-cyan-200 border border-cyan-400/40 shadow-sm flex items-center space-x-1.5 transition font-medium text-xs';
+          } else {
+            leftTray.classList.add('hidden');
+            if (labelToggleLeft) labelToggleLeft.textContent = 'Abrir Esq.';
+            btnToggleLeft.className = 'px-2.5 py-1 rounded bg-black/40 hover:bg-black/60 text-slate-400 hover:text-slate-200 border border-white/10 transition flex items-center space-x-1.5 font-normal text-xs';
+          }
+        });
+      }
+
+      // 2. Controle da Bandeja Direita (Colapsar / Expandir)
+      const btnToggleRight = document.getElementById('btnToggleRightSidebar');
+      const rightTray = document.getElementById('cardSidebarPanel');
+      const labelToggleRight = document.getElementById('labelToggleRightSidebar');
+      let rightVisible = true;
+
+      if (btnToggleRight && rightTray) {
+        btnToggleRight.addEventListener('click', () => {
+          rightVisible = !rightVisible;
+          if (rightVisible) {
+            rightTray.classList.remove('hidden');
+            if (labelToggleRight) labelToggleRight.textContent = 'Bandeja Dir.';
+            btnToggleRight.className = 'px-2.5 py-1 rounded bg-cyan-500/25 hover:bg-cyan-500/35 text-cyan-200 border border-cyan-400/40 shadow-sm transition flex items-center space-x-1.5 font-medium text-xs';
+          } else {
+            rightTray.classList.add('hidden');
+            if (labelToggleRight) labelToggleRight.textContent = 'Abrir Dir.';
+            btnToggleRight.className = 'px-2.5 py-1 rounded bg-black/40 hover:bg-black/60 text-slate-400 hover:text-slate-200 border border-white/10 transition flex items-center space-x-1.5 font-normal text-xs';
+          }
+        });
+      }
+
+      // 3. Alternar Botões de Disposição da Janela (Flutuante, Sobrepor, Subordinar)
+      const btnFloating = document.getElementById('btnWindowFloating');
+      const btnPinned = document.getElementById('btnWindowPinned');
+      const btnSubordinate = document.getElementById('btnWindowSubordinate');
+      const arrangementBtns = [btnFloating, btnPinned, btnSubordinate];
+
+      arrangementBtns.forEach(btn => {
+        if (!btn) return;
+        btn.addEventListener('click', () => {
+          arrangementBtns.forEach(b => {
+            b.className = 'px-2 py-1 rounded text-slate-400 hover:text-white hover:bg-white/5 transition flex items-center space-x-1';
+          });
+          btn.className = 'px-2.5 py-1 rounded bg-cyan-500/30 text-cyan-200 border border-cyan-400/40 font-medium flex items-center space-x-1';
+        });
+      });
+
+      // 4. Maximizar e Retrair a Janela de Detalhes
+      const cardWindow = document.getElementById('cardDetailsWindow');
+      const btnMaximize = document.getElementById('btnMaximizeWindow');
+      let isMaximized = false;
+
+      if (btnMaximize && cardWindow) {
+        btnMaximize.addEventListener('click', () => {
+          isMaximized = !isMaximized;
+          if (isMaximized) {
+            cardWindow.classList.remove('top-7', 'right-8', 'bottom-16', 'w-[1140px]', 'max-w-[85vw]');
+            cardWindow.classList.add('inset-3', 'bottom-14', 'w-auto', 'max-w-none');
+          } else {
+            cardWindow.classList.add('top-7', 'right-8', 'bottom-16', 'w-[1140px]', 'max-w-[85vw]');
+            cardWindow.classList.remove('inset-3', 'bottom-14', 'w-auto', 'max-w-none');
+          }
+        });
+      }
+
+      // 5. Fechar / Minimizar Janela
+      const btnClose = document.getElementById('btnCloseWindow');
+      const btnMin = document.getElementById('btnMinimizeWindow');
+      [btnClose, btnMin].forEach(btn => {
+        if (!btn || !cardWindow) return;
+        btn.addEventListener('click', () => {
+          cardWindow.classList.toggle('scale-95');
+          cardWindow.classList.toggle('opacity-0');
+          cardWindow.classList.toggle('pointer-events-none');
+        });
+      });
+
+      // 6. Alternar Workspaces
+      const wsBtns = document.querySelectorAll('.ws-btn');
+      wsBtns.forEach(ws => {
+        ws.addEventListener('click', () => {
+          wsBtns.forEach(b => {
+            b.className = 'ws-btn w-7 h-7 rounded-lg hover:bg-white/10 text-white/70 hover:text-white font-mono text-xs transition';
+          });
+          ws.className = 'ws-btn w-7 h-7 rounded-lg bg-cyan-500 text-slate-950 font-mono font-bold text-xs shadow-glow-cyan transition';
+        });
+      });
+
+      // 7. Atualização em tempo real do Relógio
+      const clockEl = document.getElementById('desktopClock');
+      function updateTime() {
+        if (!clockEl) return;
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        clockEl.textContent = `${hours}:${minutes}`;
+      }
+      setInterval(updateTime, 1000);
+      updateTime();
+    });
+  </script>
+<!-- END: InteractiveScripts -->
+
+
+</body></html>

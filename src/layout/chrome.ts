@@ -44,7 +44,7 @@ export function buildWorkspace(root: HTMLElement): EngineHosts {
 
   const topbar = document.createElement("header");
   topbar.id = "topbar";
-  topbar.textContent = "PROJTHREAD OS // ENGINE CORE";
+  topbar.textContent = "WORKSHELL OS // ENGINE CORE";
 
   const dockRow = document.createElement("div");
   dockRow.id = "dock-row";

@@ -49,7 +49,7 @@ During a gesture the moving window is a compositor layer. Persist and reparent h
 
 ```
 #workspace                    /* 100vw × 100vh */
-  #topbar                     /* "PROJTHREAD OS // ENGINE CORE" */
+  #topbar                     /* "WORKSHELL OS // ENGINE CORE" */
   #dock-row
     #dock-left                /* default 320px, resizable */
     #dock-center              /* flex */
@@ -124,7 +124,7 @@ Float rect (`x,y,w,h`) is kept even while docked so float/overlay restore has a 
 
 ### Persistence
 
-- Key: `projthread.layout.v1`
+- Key: `workshell.layout.v1`
 - Module: `src/layout/persist.ts`
 - Load: parse JSON; if missing, corrupt, or `version !== 1`, seed defaults (do not crash)
 - Save: serialize `LayoutState`; **never** from `pointermove`; debounce on commit (`pointerup`, dock/float/overlay/close/tab/slot-width)
@@ -207,7 +207,7 @@ If drag hitches on a 180 Hz display, the bug is in this path. Fix it before addi
 - Dark teal/cyan, futuristic IDE — not stock purple SaaS
 - `#workspace`: faint grid background
 - Panels: rounded, thin cyan glow border; stronger glow on focus
-- Top bar: `PROJTHREAD OS // ENGINE CORE`
+- Top bar: `WORKSHELL OS // ENGINE CORE`
 - Bottom taskbar: open-panel pills (title + docked/float/overlay hint)
 - Overlay dim: dark translucent scrim over the workspace
 
@@ -257,7 +257,7 @@ Vitest against the state machine (no full browser required for these):
 1. Float Spec Viewer, drag it, resize it
 2. Dock it back to the right slot (snap or Dock button)
 3. Overlay Chat; click dim restores previous mode
-4. Reload keeps positions (`projthread.layout.v1`)
+4. Reload keeps positions (`workshell.layout.v1`)
 5. Same panel DOM node after float/dock: log `isConnected` and `data-uid` on every reparent (dev helper in engine). `isConnected === true` and uid unchanged
 
 ### Motion

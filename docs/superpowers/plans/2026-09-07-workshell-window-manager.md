@@ -199,7 +199,7 @@ npm install
 npm run dev
 ```
 
-Open the printed local URL. Layout persists in `localStorage` under `projthread.layout.v1`. Clear that key to reset seed panels.
+Open the printed local URL. Layout persists in `localStorage` under `workshell.layout.v1`. Clear that key to reset seed panels.
 
 ## Test
 
@@ -249,7 +249,7 @@ describe("seedLayout", () => {
   it("seeds the five panels into the spec slots", () => {
     const s = seedLayout();
     expect(s.version).toBe(1);
-    expect(STORAGE_KEY).toBe("projthread.layout.v1");
+    expect(STORAGE_KEY).toBe("workshell.layout.v1");
     expect([...KNOWN_IDS]).toEqual(["backlog", "sprint", "chat", "spec", "metrics"]);
     expect(s.slots.left).toEqual({
       width: 320,
@@ -291,7 +291,7 @@ Expected: FAIL — cannot find module `./types`.
 - [ ] **Step 3: Write `src/layout/types.ts`**
 
 ```ts
-export const STORAGE_KEY = "projthread.layout.v1";
+export const STORAGE_KEY = "workshell.layout.v1";
 
 export const SNAP_EDGE_PX = 40;
 export const FLOAT_OUT_THRESHOLD_PX = 8;
@@ -697,7 +697,7 @@ describe("buildWorkspace", () => {
     expect(hosts.overlayDim.id).toBe("overlay-dim");
     expect(hosts.overlayHost.id).toBe("overlay-host");
     expect(hosts.taskbar.id).toBe("taskbar");
-    expect(root.querySelector("#topbar")?.textContent).toContain("PROJTHREAD OS // ENGINE CORE");
+    expect(root.querySelector("#topbar")?.textContent).toContain("WORKSHELL OS // ENGINE CORE");
     const dimIndex = [...hosts.workspace.children].indexOf(hosts.overlayDim);
     const hostIndex = [...hosts.workspace.children].indexOf(hosts.overlayHost);
     expect(hostIndex).toBeGreaterThan(dimIndex);
@@ -763,7 +763,7 @@ export function buildWorkspace(root: HTMLElement): EngineHosts {
 
   const topbar = document.createElement("header");
   topbar.id = "topbar";
-  topbar.textContent = "PROJTHREAD OS // ENGINE CORE";
+  topbar.textContent = "WORKSHELL OS // ENGINE CORE";
 
   const dockRow = document.createElement("div");
   dockRow.id = "dock-row";
@@ -2126,7 +2126,7 @@ npm install
 npm run dev
 ```
 
-Open the local URL. Layout key: `localStorage["projthread.layout.v1"]`. Clear it to restore seed panels.
+Open the local URL. Layout key: `localStorage["workshell.layout.v1"]`. Clear it to restore seed panels.
 
 ## Test
 
@@ -2210,7 +2210,7 @@ Commit those fixes with messages that describe the bug, e.g. `fix: keep uid stab
 | Overlay dim sibling under overlay host | 4 |
 | Same DOM node reparent + `data-uid` log | 5, 6 |
 | Dock / float / overlay / close / tabs / focus | 6 |
-| Persist `projthread.layout.v1`, seed, corrupt | 3, 6 |
+| Persist `workshell.layout.v1`, seed, corrupt | 3, 6 |
 | Snap, drag, resize, float-out, slot width | 7 |
 | Compositor pointer path | 7, 9 |
 | Placeholder bodies | 5 |

@@ -9,7 +9,7 @@ npm install
 npm run dev
 ```
 
-Open the local URL. Layout key: `localStorage["projthread.layout.v1"]`. Clear it to restore seed panels.
+Open the local URL. Layout key: `localStorage["workshell.layout.v1"]`. Clear it to restore seed panels.
 
 ## Test
 

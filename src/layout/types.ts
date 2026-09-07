@@ -1,4 +1,4 @@
-export const STORAGE_KEY = "projthread.layout.v1";
+export const STORAGE_KEY = "workshell.layout.v1";
 
 export const SNAP_EDGE_PX = 40;
 export const FLOAT_OUT_THRESHOLD_PX = 8;

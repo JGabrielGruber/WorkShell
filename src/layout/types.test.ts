@@ -5,7 +5,7 @@ describe("seedLayout", () => {
   it("seeds the five panels into the spec slots", () => {
     const s = seedLayout();
     expect(s.version).toBe(1);
-    expect(STORAGE_KEY).toBe("projthread.layout.v1");
+    expect(STORAGE_KEY).toBe("workshell.layout.v1");
     expect([...KNOWN_IDS]).toEqual(["backlog", "sprint", "chat", "spec", "metrics"]);
     expect(s.slots.left).toEqual({
       width: 320,

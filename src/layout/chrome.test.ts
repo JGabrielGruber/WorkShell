@@ -14,7 +14,7 @@ describe("buildWorkspace", () => {
     expect(hosts.overlayDim.id).toBe("overlay-dim");
     expect(hosts.overlayHost.id).toBe("overlay-host");
     expect(hosts.taskbar.id).toBe("taskbar");
-    expect(root.querySelector("#topbar")?.textContent).toContain("PROJTHREAD OS // ENGINE CORE");
+    expect(root.querySelector("#topbar")?.textContent).toContain("WORKSHELL OS // ENGINE CORE");
     const dimIndex = [...hosts.workspace.children].indexOf(hosts.overlayDim);
     const hostIndex = [...hosts.workspace.children].indexOf(hosts.overlayHost);
     expect(hostIndex).toBeGreaterThan(dimIndex);
