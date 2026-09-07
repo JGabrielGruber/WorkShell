@@ -23,42 +23,51 @@ function mem(initial?: Record<string, string>): Storage {
 describe("persist", () => {
   it("seeds when the key is missing", () => {
     const s = loadLayout(mem());
-    expect(s.slots.left.order).toEqual(["backlog"]);
-    expect(s.panels.metrics.mode).toBe("float");
+    expect(s.version).toBe(2);
+    expect(s.panels["task-104"].mode).toBe("float");
+    expect(s.slots.left.order).toEqual([]);
   });
 
   it("seeds when JSON is corrupt", () => {
     const storage = mem({ [STORAGE_KEY]: "{not json" });
-    expect(loadLayout(storage).version).toBe(1);
-    expect(loadLayout(storage).panels.spec.title).toBe("Spec Viewer");
+    expect(loadLayout(storage).version).toBe(2);
+    expect(loadLayout(storage).panels["task-104"].title).toBe("TASK-104");
   });
 
-  it("seeds when version is not 1", () => {
-    const storage = mem({ [STORAGE_KEY]: JSON.stringify({ version: 2, panels: {} }) });
-    expect(loadLayout(storage).slots.right.order).toEqual(["spec"]);
+  it("seeds when version is not 2", () => {
+    const storage = mem({ [STORAGE_KEY]: JSON.stringify({ version: 1, panels: {} }) });
+    expect(loadLayout(storage).panels["task-104"].id).toBe("task-104");
+    expect(loadLayout(storage).slots.right.order).toEqual([]);
   });
 
-  it("round-trips slot order, active tabs, float rects, and closed ids", () => {
+  it("round-trips float rect, hidden restore, and closed ids", () => {
     const storage = mem();
     const state = seedLayout();
-    state.slots.center.activeId = "chat";
-    state.panels.metrics.x = 44;
-    state.panels.metrics.y = 66;
-    state.closed = ["backlog"];
-    state.slots.left.order = [];
-    state.slots.left.activeId = null;
-    delete state.panels.backlog;
+    state.panels["task-104"].x = 44;
+    state.panels["task-104"].mode = "hidden";
+    state.panels["task-104"].restore = { mode: "maximized" };
+    state.closed = ["task-104"];
+    delete state.panels["task-104"];
     saveLayout(storage, state);
     const loaded = loadLayout(storage);
-    expect(loaded.slots.center.activeId).toBe("chat");
-    expect(loaded.panels.metrics.x).toBe(44);
-    expect(loaded.panels.metrics.y).toBe(66);
-    expect(loaded.closed).toEqual(["backlog"]);
-    expect(loaded.slots.left.order).toEqual([]);
-    expect(loaded.panels.backlog).toBeUndefined();
+    expect(loaded.closed).toEqual(["task-104"]);
+    expect(loaded.panels["task-104"]).toBeUndefined();
   });
 
-  it("drops unknown panel ids from panels, orders, overlay, and closed", () => {
+  it("keeps hidden restore on a live panel", () => {
+    const storage = mem();
+    const state = seedLayout();
+    state.panels["task-104"].mode = "hidden";
+    state.panels["task-104"].restore = { mode: "maximized" };
+    state.panels["task-104"].x = 80;
+    saveLayout(storage, state);
+    const loaded = loadLayout(storage);
+    expect(loaded.panels["task-104"].mode).toBe("hidden");
+    expect(loaded.panels["task-104"].restore).toEqual({ mode: "maximized" });
+    expect(loaded.panels["task-104"].x).toBe(80);
+  });
+
+  it("drops unknown panel ids", () => {
     const storage = mem();
     const state = seedLayout() as ReturnType<typeof seedLayout> & {
       panels: Record<string, unknown>;
@@ -67,25 +76,19 @@ describe("persist", () => {
       id: "ghost",
       uid: "x",
       title: "Ghost",
-      mode: "dock",
-      slot: "left",
+      mode: "float",
       x: 0,
       y: 0,
       w: 10,
       h: 10,
       z: 1,
     };
-    state.slots.left.order = ["backlog", "ghost"];
+    state.slots.left.order = ["ghost", "task-104"];
     state.closed = ["nope"];
-    state.overlay = {
-      id: "ghost",
-      restore: { mode: "dock", slot: "left" },
-    };
     saveLayout(storage, state as ReturnType<typeof seedLayout>);
     const loaded = loadLayout(storage);
     expect(loaded.panels.ghost).toBeUndefined();
-    expect(loaded.slots.left.order).toEqual(["backlog"]);
+    expect(loaded.slots.left.order).toEqual(["task-104"]);
     expect(loaded.closed).toEqual([]);
-    expect(loaded.overlay).toBeNull();
   });
 });

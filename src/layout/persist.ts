@@ -16,7 +16,7 @@ function isSlotId(v: unknown): v is SlotId {
 }
 
 function isMode(v: unknown): v is Mode {
-  return v === "dock" || v === "float" || v === "overlay";
+  return v === "dock" || v === "float" || v === "overlay" || v === "maximized" || v === "hidden";
 }
 
 function sanitizeSlot(slot: SlotState | undefined, fallbackWidth: number): SlotState {
@@ -32,13 +32,20 @@ function sanitizePanel(id: string, raw: PanelState): PanelState {
     id,
     uid: typeof raw.uid === "string" ? raw.uid : "",
     title: typeof raw.title === "string" ? raw.title : id,
-    mode: isMode(raw.mode) ? raw.mode : "dock",
+    mode: isMode(raw.mode) ? raw.mode : "float",
     slot: isSlotId(raw.slot) ? raw.slot : undefined,
     x: typeof raw.x === "number" ? raw.x : 120,
     y: typeof raw.y === "number" ? raw.y : 96,
     w: typeof raw.w === "number" ? raw.w : 420,
     h: typeof raw.h === "number" ? raw.h : 280,
     z: typeof raw.z === "number" ? raw.z : 1,
+    restore:
+      raw.restore && isMode(raw.restore.mode)
+        ? {
+            mode: raw.restore.mode,
+            slot: isSlotId(raw.restore.slot) ? raw.restore.slot : undefined,
+          }
+        : undefined,
   };
 }
 
@@ -62,7 +69,7 @@ export function sanitizeLayout(parsed: LayoutState): LayoutState {
         }
       : null;
   return {
-    version: 1,
+    version: 2,
     slots: {
       left: sanitizeSlot(parsed.slots.left, 320),
       center: sanitizeSlot(parsed.slots.center, 0),
@@ -80,7 +87,7 @@ export function loadLayout(storage: Storage): LayoutState {
   if (!raw) return seedLayout();
   try {
     const parsed = JSON.parse(raw) as LayoutState;
-    if (parsed?.version !== 1) return seedLayout();
+    if (parsed?.version !== 2) return seedLayout();
     return sanitizeLayout(parsed);
   } catch {
     return seedLayout();
