@@ -244,7 +244,8 @@ body,
   box-shadow: 0 0 0 1px var(--cyan), 0 0 18px var(--cyan-dim);
 }
 
-.panel.is-dragging {
+.panel.is-dragging,
+.panel.is-dragging[data-focus="true"] {
   will-change: transform;
   box-shadow: 0 0 0 1px var(--cyan);
 }
