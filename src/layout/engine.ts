@@ -52,7 +52,6 @@ export class WorkspaceEngine {
     startX: number;
     originW: number;
   } = null;
-  private snap: SlotId | null = null;
 
   constructor(
     private hosts: EngineHosts,
@@ -416,9 +415,19 @@ export class WorkspaceEngine {
   private beginDrag(e: PointerEvent, id: string): void {
     if ((e.target as HTMLElement).closest("[data-action]")) return;
     const panel = this.state.panels[id];
-    if (!panel || panel.mode === "overlay") return;
+    if (!panel || panel.mode === "overlay" || panel.mode === "hidden") return;
     e.preventDefault();
     (e.currentTarget as HTMLElement | null)?.setPointerCapture?.(e.pointerId);
+    if (panel.mode === "maximized") {
+      const vw = window.innerWidth || 1280;
+      const w = panel.w;
+      panel.x = Math.max(0, Math.min(e.clientX - w / 2, vw - w));
+      panel.y = 0;
+      panel.mode = "float";
+      this.applyMode(id);
+      this.renderTaskbar();
+      this.persist();
+    }
     this.drag = {
       id,
       pointerId: e.pointerId,
@@ -498,45 +507,6 @@ export class WorkspaceEngine {
     const x = this.drag.originX + (e.clientX - this.drag.startX);
     const y = this.drag.originY + (e.clientY - this.drag.startY);
     el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-    // Snap from pointer + viewport + stored slot widths. Do not measure the panel.
-    this.snap = snapZone(
-      e.clientX,
-      window.innerWidth || 1280,
-      this.state.slots.left.width,
-      this.state.slots.right.width,
-    );
-    this.paintSnap(this.snap);
-  }
-
-  /**
-   * Snap preview is a sibling overlay. Zones: 40px left/right edges, middle third = center.
-   */
-  private paintSnap(zone: SlotId | null): void {
-    const preview = this.hosts.snapPreview;
-    if (!zone) {
-      preview.dataset.on = "false";
-      return;
-    }
-    const vw = window.innerWidth || 1280;
-    const vh = window.innerHeight || 800;
-    const leftW = this.state.slots.left.width;
-    const rightW = this.state.slots.right.width;
-    let x = 8;
-    let y = 48;
-    let w = leftW - 16;
-    let h = vh - 96;
-    if (zone === "center") {
-      x = leftW + 8;
-      w = Math.max(80, vw - leftW - rightW - 16);
-    } else if (zone === "right") {
-      x = vw - rightW + 8;
-      w = rightW - 16;
-    }
-    preview.style.setProperty("--snap-x", `${x}px`);
-    preview.style.setProperty("--snap-y", `${y}px`);
-    preview.style.setProperty("--snap-w", `${w}px`);
-    preview.style.setProperty("--snap-h", `${h}px`);
-    preview.dataset.on = "true";
   }
 
   private onPointerUp(e: PointerEvent): void {
@@ -571,9 +541,7 @@ export class WorkspaceEngine {
     }
     if (!this.drag || e.pointerId !== this.drag.pointerId) return;
     const el = this.nodes.get(this.drag.id);
-    const zone = this.snap;
     this.hosts.snapPreview.dataset.on = "false";
-    this.snap = null;
     if (el) {
       el.classList.remove("is-dragging");
       const dx = e.clientX - this.drag.startX;
@@ -581,12 +549,6 @@ export class WorkspaceEngine {
       const x = this.drag.originX + dx;
       const y = this.drag.originY + dy;
       el.style.transform = "";
-      if (this.drag.armed && zone) {
-        const id = this.drag.id;
-        this.drag = null;
-        this.dock(id, zone);
-        return;
-      }
       if (this.drag.armed) {
         const panel = this.state.panels[this.drag.id];
         panel.x = x;

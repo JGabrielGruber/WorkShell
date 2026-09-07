@@ -91,3 +91,53 @@ describe("WorkspaceEngine", () => {
     expect(hosts.taskbar.querySelector("button")).toBeNull();
   });
 });
+
+describe("gestures", () => {
+  beforeEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("pointerup after a float drag does not dock", () => {
+    const { engine, hosts } = boot();
+    engine.float("task-104", { x: 100, y: 80, w: 300, h: 220 });
+    const el = engine.node("task-104");
+    const bar = el.querySelector(".panel-titlebar")!;
+    bar.dispatchEvent(
+      new PointerEvent("pointerdown", { bubbles: true, clientX: 120, clientY: 90, pointerId: 1 }),
+    );
+    document.dispatchEvent(
+      new PointerEvent("pointermove", { bubbles: true, clientX: 1790, clientY: 90, pointerId: 1 }),
+    );
+    const before = localStorage.getItem(STORAGE_KEY);
+    document.dispatchEvent(
+      new PointerEvent("pointermove", { bubbles: true, clientX: 1800, clientY: 90, pointerId: 1 }),
+    );
+    expect(localStorage.getItem(STORAGE_KEY)).toBe(before);
+    document.dispatchEvent(
+      new PointerEvent("pointerup", { bubbles: true, clientX: 1790, clientY: 90, pointerId: 1 }),
+    );
+    expect(engine.state.panels["task-104"].mode).toBe("float");
+    expect(el.parentElement).toBe(hosts.floatLayer);
+  });
+
+  it("titlebar drag on maximized unmaximizes then floats", () => {
+    const { engine } = boot();
+    engine.float("task-104", { x: 100, y: 80, w: 300, h: 220 });
+    engine.maximize("task-104");
+    const el = engine.node("task-104");
+    const bar = el.querySelector(".panel-titlebar")!;
+    bar.dispatchEvent(
+      new PointerEvent("pointerdown", { bubbles: true, clientX: 400, clientY: 20, pointerId: 1 }),
+    );
+    expect(engine.state.panels["task-104"].mode).toBe("float");
+    document.dispatchEvent(
+      new PointerEvent("pointermove", { bubbles: true, clientX: 430, clientY: 40, pointerId: 1 }),
+    );
+    expect(el.style.transform).toMatch(/translate3d/);
+    document.dispatchEvent(
+      new PointerEvent("pointerup", { bubbles: true, clientX: 430, clientY: 40, pointerId: 1 }),
+    );
+    expect(engine.state.panels["task-104"].mode).toBe("float");
+  });
+});
