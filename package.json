@@ -3,10 +3,11 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "workspaces": ["packages/*", "packages/themes/*", "apps/*"],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
+    "dev": "npm run dev -w @workshell/shell-demo",
+    "dev:blob": "vite",
+    "build": "npm run build -w @workshell/shell-demo",
     "test": "vitest run"
   },
   "devDependencies": {
