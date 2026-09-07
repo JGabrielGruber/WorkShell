@@ -1,0 +1,79 @@
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+#workspace {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.panel {
+  pointer-events: auto;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--w);
+  height: var(--h);
+  transform: translate3d(var(--x), var(--y), 0);
+  z-index: var(--z);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
+}
+
+.panel[data-mode="dock"] {
+  inset: 0;
+  left: 0;
+  top: 0;
+  transform: none;
+  width: auto;
+  height: auto;
+}
+
+.panel[data-mode="dock"][hidden] {
+  display: none;
+}
+
+.panel[data-mode="overlay"] {
+  position: relative;
+  left: auto;
+  top: auto;
+  width: 100%;
+  height: 100%;
+  transform: none;
+}
+
+.panel[data-mode="maximized"] {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: calc(100% - var(--taskbar-h) - var(--taskbar-gap));
+  transform: none;
+}
+
+.panel.is-dragging {
+  will-change: transform;
+}
+
+.resize-handle {
+  display: none;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 14px;
+  height: 14px;
+  cursor: nwse-resize;
+  pointer-events: auto;
+}
+
+.panel[data-mode="float"] .resize-handle {
+  display: block;
+}
