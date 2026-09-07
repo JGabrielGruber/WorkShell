@@ -152,6 +152,7 @@ body,
 #snap-preview {
   position: absolute;
   pointer-events: none;
+  z-index: 10000;
   display: none;
   border: 1px dashed var(--cyan);
   background: rgba(78, 230, 224, 0.08);
