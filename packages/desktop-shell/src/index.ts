@@ -1,5 +1,7 @@
 export { buildWorkspace, slot } from "./chrome";
 export { createPanelChrome } from "./panel-chrome";
+export { createDesktop } from "./host";
+export type { BootOptions, FillPanelBody, FillWidgetLayer, WorkshellHost } from "./host";
 
 export type {
   EngineHosts,
