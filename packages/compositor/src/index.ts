@@ -20,4 +20,5 @@ export {
   DEFAULT_FLOAT,
 } from "./types";
 export { loadLayout, saveLayout, sanitizeLayout } from "./persist";
+export { WorkspaceEngine, snapZone } from "./engine";
 
