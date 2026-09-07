@@ -86,14 +86,16 @@ export class WorkspaceEngine {
     document.addEventListener("pointermove", (e) => this.onPointerMove(e));
     document.addEventListener("pointerup", (e) => this.onPointerUp(e));
     document.addEventListener("pointercancel", (e) => this.onPointerUp(e));
-    this.hosts.left.querySelector("[data-resize-slot='left']")?.addEventListener(
-      "pointerdown",
-      (e) => this.beginSlotResize(e as PointerEvent, "left"),
-    );
-    this.hosts.right.querySelector("[data-resize-slot='right']")?.addEventListener(
-      "pointerdown",
-      (e) => this.beginSlotResize(e as PointerEvent, "right"),
-    );
+    this.hosts.left
+      ?.querySelector("[data-resize-slot='left']")
+      ?.addEventListener("pointerdown", (e) =>
+        this.beginSlotResize(e as PointerEvent, "left"),
+      );
+    this.hosts.right
+      ?.querySelector("[data-resize-slot='right']")
+      ?.addEventListener("pointerdown", (e) =>
+        this.beginSlotResize(e as PointerEvent, "right"),
+      );
   }
 
   persist(): void {
@@ -198,11 +200,56 @@ export class WorkspaceEngine {
     this.persist();
   }
 
+  maximize(id: string): void {
+    const panel = this.state.panels[id];
+    if (!panel) return;
+    if (this.state.overlay?.id === id) this.state.overlay = null;
+    this.removeFromSlots(id);
+    panel.mode = "maximized";
+    this.focus(id, false);
+    this.applyMode(id);
+    this.renderTaskbar();
+    this.applyOverlayChrome();
+    this.persist();
+  }
+
+  unmaximize(id: string): void {
+    const panel = this.state.panels[id];
+    if (!panel || panel.mode !== "maximized") return;
+    this.float(id);
+  }
+
+  hide(id: string): void {
+    const panel = this.state.panels[id];
+    if (!panel || panel.mode === "hidden") return;
+    if (this.state.overlay?.id === id) this.state.overlay = null;
+    panel.restore = { mode: panel.mode, slot: panel.slot };
+    this.removeFromSlots(id);
+    panel.mode = "hidden";
+    this.applyMode(id);
+    this.renderTaskbar();
+    this.applyOverlayChrome();
+    this.persist();
+  }
+
+  show(id: string): void {
+    const panel = this.state.panels[id];
+    if (!panel) return;
+    if (panel.mode !== "hidden") {
+      this.focus(id);
+      return;
+    }
+    const restore = panel.restore;
+    panel.restore = undefined;
+    if (restore?.mode === "maximized") this.maximize(id);
+    else this.float(id);
+  }
+
   focus(id: string, persist = true): void {
     const panel = this.state.panels[id];
     if (!panel) return;
     if (panel.mode === "dock" && panel.slot) this.activateTab(panel.slot, id, persist);
-    if (panel.mode === "float") {
+    if (panel.mode === "float" || panel.mode === "maximized") {
       panel.z = this.state.nextZ++;
       const el = this.nodes.get(id);
       if (el) el.style.setProperty("--z", String(panel.z));
@@ -258,26 +305,37 @@ export class WorkspaceEngine {
     el.style.setProperty("--z", String(panel.z));
     el.style.transform = "";
     if (panel.mode === "dock" && panel.slot) {
-      this.mount(el, this.slotBody(panel.slot));
+      el.style.display = "";
+      const body = this.slotBody(panel.slot);
+      if (body) this.mount(el, body);
       const active = this.state.slots[panel.slot].activeId === id;
       if (active) el.removeAttribute("hidden");
       else el.setAttribute("hidden", "");
     } else if (panel.mode === "float") {
+      el.style.display = "";
       el.removeAttribute("hidden");
       this.mount(el, this.hosts.floatLayer);
+    } else if (panel.mode === "maximized") {
+      el.style.display = "";
+      el.removeAttribute("hidden");
+      this.mount(el, this.hosts.floatLayer);
+    } else if (panel.mode === "hidden") {
+      el.style.display = "none";
+      this.mount(el, this.hosts.floatLayer);
     } else {
+      el.style.display = "";
       el.removeAttribute("hidden");
       this.mount(el, this.hosts.overlayHost);
     }
   }
 
-  private slotBody(slot: SlotId): HTMLElement {
+  private slotBody(slot: SlotId): HTMLElement | undefined {
     if (slot === "left") return this.hosts.leftBody;
     if (slot === "right") return this.hosts.rightBody;
     return this.hosts.centerBody;
   }
 
-  private slotTabs(slot: SlotId): HTMLElement {
+  private slotTabs(slot: SlotId): HTMLElement | undefined {
     if (slot === "left") return this.hosts.leftTabs;
     if (slot === "right") return this.hosts.rightTabs;
     return this.hosts.centerTabs;
@@ -292,6 +350,7 @@ export class WorkspaceEngine {
   private renderTabs(): void {
     (["left", "center", "right"] as SlotId[]).forEach((slot) => {
       const host = this.slotTabs(slot);
+      if (!host) return;
       host.replaceChildren();
       for (const id of this.state.slots[slot].order) {
         const panel = this.state.panels[id];
@@ -316,7 +375,10 @@ export class WorkspaceEngine {
       btn.className = "task-pill";
       btn.dataset.mode = panel.mode;
       btn.textContent = `${panel.title} · ${panel.mode}`;
-      btn.addEventListener("click", () => this.focus(id));
+      btn.addEventListener("click", () => {
+        if (this.state.panels[id]?.mode === "hidden") this.show(id);
+        else this.focus(id);
+      });
       this.hosts.taskbar.append(btn);
     }
   }
@@ -336,7 +398,11 @@ export class WorkspaceEngine {
         e.stopPropagation();
         const action = btn.dataset.action;
         if (action === "close") this.close(id);
-        else if (action === "float") this.float(id);
+        else if (action === "hide") this.hide(id);
+        else if (action === "maximize") {
+          if (this.state.panels[id]?.mode === "maximized") this.unmaximize(id);
+          else this.maximize(id);
+        } else if (action === "float") this.float(id);
         else if (action === "overlay") this.overlay(id);
         else if (action === "dock") {
           const panel = this.state.panels[id];

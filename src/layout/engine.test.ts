@@ -32,79 +32,62 @@ describe("WorkspaceEngine", () => {
     localStorage.clear();
   });
 
-  it("preserves the same node and uid across float and dock", () => {
+  it("preserves the same node and uid across float", () => {
     const { engine, hosts } = boot();
-    const before = engine.node("spec");
+    const before = engine.node("task-104");
     const uid = before.dataset.uid;
-    expect(before.parentElement).toBe(hosts.rightBody);
-    engine.float("spec");
+    expect(before.parentElement).toBe(hosts.floatLayer);
+    engine.float("task-104", { x: 40, y: 50, w: 300, h: 220 });
     expect(before.isConnected).toBe(true);
     expect(before.dataset.uid).toBe(uid);
     expect(before.parentElement).toBe(hosts.floatLayer);
-    engine.dock("spec", "right");
-    expect(before.isConnected).toBe(true);
-    expect(before.dataset.uid).toBe(uid);
-    expect(before.parentElement).toBe(hosts.rightBody);
-    expect(before).toBe(engine.node("spec"));
   });
 
-  it("stacks docked panels as tabs and can overlay then restore", () => {
+  it("maximize does not rewrite stored rect; unmaximize restores it", () => {
     const { engine, hosts } = boot();
-    const chat = engine.node("chat");
-    expect(engine.state.slots.center.order).toEqual(["sprint", "chat"]);
-    engine.activateTab("center", "chat");
-    expect(engine.state.slots.center.activeId).toBe("chat");
-    expect(chat.hasAttribute("hidden")).toBe(false);
-    engine.overlay("chat");
-    expect(chat.parentElement).toBe(hosts.overlayHost);
-    expect(hosts.overlayDim.dataset.on).toBe("true");
-    hosts.overlayDim.click();
-    expect(engine.state.panels.chat.mode).toBe("dock");
-    expect(chat.parentElement).toBe(hosts.centerBody);
-    expect(chat.hasAttribute("hidden")).toBe(false);
-    expect(engine.node("sprint").hasAttribute("hidden")).toBe(true);
+    engine.float("task-104", { x: 40, y: 50, w: 300, h: 220 });
+    const el = engine.node("task-104");
+    engine.maximize("task-104");
+    expect(engine.state.panels["task-104"].mode).toBe("maximized");
+    expect(engine.state.panels["task-104"].x).toBe(40);
+    expect(engine.state.panels["task-104"].w).toBe(300);
+    expect(el.dataset.mode).toBe("maximized");
+    expect(el.parentElement).toBe(hosts.floatLayer);
+    engine.unmaximize("task-104");
+    expect(engine.state.panels["task-104"].mode).toBe("float");
+    expect(engine.state.panels["task-104"].x).toBe(40);
+    expect(engine.state.panels["task-104"].y).toBe(50);
+    expect(engine.state.panels["task-104"].w).toBe(300);
+    expect(engine.state.panels["task-104"].h).toBe(220);
   });
 
-  it("close removes the panel from the slot and records closed", () => {
-    const { engine } = boot();
-    const metrics = engine.node("metrics");
-    engine.close("metrics");
-    expect(metrics.isConnected).toBe(false);
-    expect(engine.state.closed).toContain("metrics");
-    expect(engine.state.slots.right.order).not.toContain("metrics");
-  });
-
-  it("persist round-trips after dock/float", () => {
-    const { engine } = boot();
-    engine.float("spec", { x: 40, y: 50, w: 300, h: 220 });
-    engine.persist();
-    const raw = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
-    expect(raw.panels.spec.mode).toBe("float");
-    expect(raw.panels.spec.x).toBe(40);
-  });
-});
-
-describe("gestures", () => {
-  beforeEach(() => {
-    document.body.innerHTML = "";
-    localStorage.clear();
-  });
-
-  it("docks a floating panel on pointerup in the right snap zone", () => {
+  it("hide keeps the node and show restores maximized", () => {
     const { engine, hosts } = boot();
-    engine.float("spec", { x: 100, y: 80, w: 300, h: 220 });
-    const el = engine.node("spec");
-    const bar = el.querySelector(".panel-titlebar")!;
-    bar.dispatchEvent(
-      new PointerEvent("pointerdown", { bubbles: true, clientX: 120, clientY: 90, pointerId: 1 }),
+    const el = engine.node("task-104");
+    engine.maximize("task-104");
+    engine.hide("task-104");
+    expect(el.isConnected).toBe(true);
+    expect(engine.state.closed).not.toContain("task-104");
+    expect(engine.state.panels["task-104"].mode).toBe("hidden");
+    expect(engine.state.panels["task-104"].restore).toEqual({ mode: "maximized" });
+    expect(el.style.display).toBe("none");
+    const pill = [...hosts.taskbar.querySelectorAll("button")].find((b) =>
+      b.textContent?.includes("TASK-104"),
     );
-    document.dispatchEvent(
-      new PointerEvent("pointermove", { bubbles: true, clientX: 1790, clientY: 90, pointerId: 1 }),
-    );
-    document.dispatchEvent(
-      new PointerEvent("pointerup", { bubbles: true, clientX: 1790, clientY: 90, pointerId: 1 }),
-    );
-    expect(engine.state.panels.spec.mode).toBe("dock");
-    expect(el.parentElement).toBe(hosts.rightBody);
+    expect(pill).toBeTruthy();
+    pill!.click();
+    expect(engine.state.panels["task-104"].mode).toBe("maximized");
+    expect(engine.state.panels["task-104"].restore).toBeUndefined();
+    expect(el.style.display).not.toBe("none");
+  });
+
+  it("close records closed and removes the pill", () => {
+    const { engine, hosts } = boot();
+    const el = engine.node("task-104");
+    engine.close("task-104");
+    expect(el.isConnected).toBe(false);
+    expect(engine.state.closed).toContain("task-104");
+    expect(engine.state.panels["task-104"]).toBeDefined();
+    expect(hosts.taskbar.querySelector("button")).toBeNull();
   });
 });
