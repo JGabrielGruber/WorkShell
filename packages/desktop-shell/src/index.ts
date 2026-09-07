@@ -1,4 +1,6 @@
 export { buildWorkspace, slot } from "./chrome";
+export { createPanelChrome } from "./panel-chrome";
+
 export type {
   EngineHosts,
   LayoutState,
