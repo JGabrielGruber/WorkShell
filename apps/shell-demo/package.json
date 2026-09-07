@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@workshell/compositor": "*",
     "@workshell/desktop-shell": "*",
     "@workshell/theme-aetheris": "*"
   },

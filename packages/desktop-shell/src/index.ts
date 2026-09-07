@@ -14,6 +14,8 @@ export type {
 } from "@workshell/compositor";
 export {
   DEFAULT_FLOAT,
+  DEFAULT_LEFT_W,
+  DEFAULT_RIGHT_W,
   STORAGE_KEY,
   TASKBAR_GAP,
   TASKBAR_H,
