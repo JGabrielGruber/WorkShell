@@ -2,6 +2,7 @@ import type { EngineHosts } from "./chrome";
 import { loadLayout, saveLayout } from "./persist";
 import {
   DEFAULT_FLOAT,
+  FLOAT_OUT_THRESHOLD_PX,
   MIN_FLOAT_H,
   MIN_FLOAT_W,
   SNAP_EDGE_PX,
@@ -27,6 +28,31 @@ export function snapZone(
 export class WorkspaceEngine {
   state: LayoutState;
   private nodes = new Map<string, HTMLElement>();
+  private drag: null | {
+    id: string;
+    pointerId: number;
+    startX: number;
+    startY: number;
+    originX: number;
+    originY: number;
+    fromDock: boolean;
+    armed: boolean;
+  } = null;
+  private resize: null | {
+    id: string;
+    pointerId: number;
+    startX: number;
+    startY: number;
+    originW: number;
+    originH: number;
+  } = null;
+  private slotDrag: null | {
+    slot: "left" | "right";
+    pointerId: number;
+    startX: number;
+    originW: number;
+  } = null;
+  private snap: SlotId | null = null;
 
   constructor(
     private hosts: EngineHosts,
@@ -57,6 +83,17 @@ export class WorkspaceEngine {
     this.hosts.overlayDim.addEventListener("click", () => {
       if (this.state.overlay?.id) this.restoreOverlay();
     });
+    document.addEventListener("pointermove", (e) => this.onPointerMove(e));
+    document.addEventListener("pointerup", (e) => this.onPointerUp(e));
+    document.addEventListener("pointercancel", (e) => this.onPointerUp(e));
+    this.hosts.left.querySelector("[data-resize-slot='left']")?.addEventListener(
+      "pointerdown",
+      (e) => this.beginSlotResize(e as PointerEvent, "left"),
+    );
+    this.hosts.right.querySelector("[data-resize-slot='right']")?.addEventListener(
+      "pointerdown",
+      (e) => this.beginSlotResize(e as PointerEvent, "right"),
+    );
   }
 
   persist(): void {
@@ -287,6 +324,12 @@ export class WorkspaceEngine {
   private bindPanel(el: HTMLElement): void {
     const id = el.dataset.id!;
     el.addEventListener("pointerdown", () => this.focus(id));
+    const bar = el.querySelector(".panel-titlebar");
+    bar?.addEventListener("pointerdown", (e) => this.beginDrag(e as PointerEvent, id));
+    el.querySelector("[data-resize]")?.addEventListener("pointerdown", (e) => {
+      e.stopPropagation();
+      this.beginResize(e as PointerEvent, id);
+    });
     el.querySelectorAll<HTMLButtonElement>("[data-action]").forEach((btn) => {
       btn.addEventListener("pointerdown", (e) => e.stopPropagation());
       btn.addEventListener("click", (e) => {
@@ -302,5 +345,191 @@ export class WorkspaceEngine {
         }
       });
     });
+  }
+
+  private beginDrag(e: PointerEvent, id: string): void {
+    if ((e.target as HTMLElement).closest("[data-action]")) return;
+    const panel = this.state.panels[id];
+    if (!panel || panel.mode === "overlay") return;
+    e.preventDefault();
+    (e.currentTarget as HTMLElement | null)?.setPointerCapture?.(e.pointerId);
+    this.drag = {
+      id,
+      pointerId: e.pointerId,
+      startX: e.clientX,
+      startY: e.clientY,
+      originX: panel.x,
+      originY: panel.y,
+      fromDock: panel.mode === "dock",
+      armed: panel.mode === "float",
+    };
+    if (this.drag.armed) this.nodes.get(id)?.classList.add("is-dragging");
+    this.focus(id, false);
+  }
+
+  private beginResize(e: PointerEvent, id: string): void {
+    const panel = this.state.panels[id];
+    if (!panel || panel.mode !== "float") return;
+    e.preventDefault();
+    this.resize = {
+      id,
+      pointerId: e.pointerId,
+      startX: e.clientX,
+      startY: e.clientY,
+      originW: panel.w,
+      originH: panel.h,
+    };
+  }
+
+  private beginSlotResize(e: PointerEvent, slot: "left" | "right"): void {
+    e.preventDefault();
+    this.slotDrag = {
+      slot,
+      pointerId: e.pointerId,
+      startX: e.clientX,
+      originW: this.state.slots[slot].width,
+    };
+  }
+
+  private onPointerMove(e: PointerEvent): void {
+    if (this.slotDrag && e.pointerId === this.slotDrag.pointerId) {
+      const dx = e.clientX - this.slotDrag.startX;
+      const next =
+        this.slotDrag.slot === "left"
+          ? this.slotDrag.originW + dx
+          : this.slotDrag.originW - dx;
+      this.hosts.workspace.style.setProperty(
+        this.slotDrag.slot === "left" ? "--left-w" : "--right-w",
+        `${Math.max(180, next)}px`,
+      );
+      return;
+    }
+    if (this.resize && e.pointerId === this.resize.pointerId) {
+      const el = this.nodes.get(this.resize.id);
+      if (!el) return;
+      const w = Math.max(MIN_FLOAT_W, this.resize.originW + (e.clientX - this.resize.startX));
+      const h = Math.max(MIN_FLOAT_H, this.resize.originH + (e.clientY - this.resize.startY));
+      el.style.setProperty("--w", `${w}px`);
+      el.style.setProperty("--h", `${h}px`);
+      return;
+    }
+    if (!this.drag || e.pointerId !== this.drag.pointerId) return;
+    const dx = e.clientX - this.drag.startX;
+    const dy = e.clientY - this.drag.startY;
+    if (!this.drag.armed) {
+      if (Math.hypot(dx, dy) < FLOAT_OUT_THRESHOLD_PX) return;
+      // Commit-time reparent once, then compositor drag.
+      this.float(this.drag.id);
+      this.drag.armed = true;
+      this.drag.originX = e.clientX - 48;
+      this.drag.originY = e.clientY - 14;
+      this.drag.startX = e.clientX;
+      this.drag.startY = e.clientY;
+      this.nodes.get(this.drag.id)?.classList.add("is-dragging");
+    }
+    const el = this.nodes.get(this.drag.id);
+    if (!el) return;
+    const x = this.drag.originX + (e.clientX - this.drag.startX);
+    const y = this.drag.originY + (e.clientY - this.drag.startY);
+    el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    // Snap from pointer + viewport + stored slot widths. Do not measure the panel.
+    this.snap = snapZone(
+      e.clientX,
+      window.innerWidth || 1280,
+      this.state.slots.left.width,
+      this.state.slots.right.width,
+    );
+    this.paintSnap(this.snap);
+  }
+
+  /**
+   * Snap preview is a sibling overlay. Zones: 40px left/right edges, middle third = center.
+   */
+  private paintSnap(zone: SlotId | null): void {
+    const preview = this.hosts.snapPreview;
+    if (!zone) {
+      preview.dataset.on = "false";
+      return;
+    }
+    const vw = window.innerWidth || 1280;
+    const vh = window.innerHeight || 800;
+    const leftW = this.state.slots.left.width;
+    const rightW = this.state.slots.right.width;
+    let x = 8;
+    let y = 48;
+    let w = leftW - 16;
+    let h = vh - 96;
+    if (zone === "center") {
+      x = leftW + 8;
+      w = Math.max(80, vw - leftW - rightW - 16);
+    } else if (zone === "right") {
+      x = vw - rightW + 8;
+      w = rightW - 16;
+    }
+    preview.style.setProperty("--snap-x", `${x}px`);
+    preview.style.setProperty("--snap-y", `${y}px`);
+    preview.style.setProperty("--snap-w", `${w}px`);
+    preview.style.setProperty("--snap-h", `${h}px`);
+    preview.dataset.on = "true";
+  }
+
+  private onPointerUp(e: PointerEvent): void {
+    if (this.slotDrag && e.pointerId === this.slotDrag.pointerId) {
+      const dx = e.clientX - this.slotDrag.startX;
+      const next =
+        this.slotDrag.slot === "left"
+          ? this.slotDrag.originW + dx
+          : this.slotDrag.originW - dx;
+      this.setSlotWidth(this.slotDrag.slot, next);
+      this.slotDrag = null;
+      return;
+    }
+    if (this.resize && e.pointerId === this.resize.pointerId) {
+      const panel = this.state.panels[this.resize.id];
+      const el = this.nodes.get(this.resize.id);
+      if (panel && el) {
+        panel.w = Math.max(
+          MIN_FLOAT_W,
+          this.resize.originW + (e.clientX - this.resize.startX),
+        );
+        panel.h = Math.max(
+          MIN_FLOAT_H,
+          this.resize.originH + (e.clientY - this.resize.startY),
+        );
+        el.style.setProperty("--w", `${panel.w}px`);
+        el.style.setProperty("--h", `${panel.h}px`);
+        this.persist();
+      }
+      this.resize = null;
+      return;
+    }
+    if (!this.drag || e.pointerId !== this.drag.pointerId) return;
+    const el = this.nodes.get(this.drag.id);
+    const zone = this.snap;
+    this.hosts.snapPreview.dataset.on = "false";
+    this.snap = null;
+    if (el) {
+      el.classList.remove("is-dragging");
+      const dx = e.clientX - this.drag.startX;
+      const dy = e.clientY - this.drag.startY;
+      const x = this.drag.originX + dx;
+      const y = this.drag.originY + dy;
+      el.style.transform = "";
+      if (this.drag.armed && zone) {
+        const id = this.drag.id;
+        this.drag = null;
+        this.dock(id, zone);
+        return;
+      }
+      if (this.drag.armed) {
+        const panel = this.state.panels[this.drag.id];
+        panel.x = x;
+        panel.y = y;
+        el.style.setProperty("--x", `${x}px`);
+        el.style.setProperty("--y", `${y}px`);
+        this.persist();
+      }
+    }
+    this.drag = null;
   }
 }

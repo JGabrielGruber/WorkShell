@@ -83,3 +83,28 @@ describe("WorkspaceEngine", () => {
     expect(raw.panels.spec.x).toBe(40);
   });
 });
+
+describe("gestures", () => {
+  beforeEach(() => {
+    document.body.innerHTML = "";
+    localStorage.clear();
+  });
+
+  it("docks a floating panel on pointerup in the right snap zone", () => {
+    const { engine, hosts } = boot();
+    engine.float("spec", { x: 100, y: 80, w: 300, h: 220 });
+    const el = engine.node("spec");
+    const bar = el.querySelector(".panel-titlebar")!;
+    bar.dispatchEvent(
+      new PointerEvent("pointerdown", { bubbles: true, clientX: 120, clientY: 90, pointerId: 1 }),
+    );
+    document.dispatchEvent(
+      new PointerEvent("pointermove", { bubbles: true, clientX: 1790, clientY: 90, pointerId: 1 }),
+    );
+    document.dispatchEvent(
+      new PointerEvent("pointerup", { bubbles: true, clientX: 1790, clientY: 90, pointerId: 1 }),
+    );
+    expect(engine.state.panels.spec.mode).toBe("dock");
+    expect(el.parentElement).toBe(hosts.rightBody);
+  });
+});
