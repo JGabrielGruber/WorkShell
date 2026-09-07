@@ -1,3 +1,5 @@
+import { mountKanban } from "../desktop/kanban";
+
 export type EngineHosts = {
   workspace: HTMLElement;
   wallpaper: HTMLElement;
@@ -86,6 +88,8 @@ export function buildWorkspace(root: HTMLElement): EngineHosts {
 
   workspace.append(wallpaper, widgetLayer, floatLayer, taskbar, overlayDim, overlayHost);
   root.append(workspace);
+
+  mountKanban(widgetLayer);
 
   return {
     workspace,
