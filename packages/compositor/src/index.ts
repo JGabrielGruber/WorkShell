@@ -19,3 +19,5 @@ export {
   TASKBAR_GAP,
   DEFAULT_FLOAT,
 } from "./types";
+export { loadLayout, saveLayout, sanitizeLayout } from "./persist";
+
