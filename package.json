@@ -6,7 +6,6 @@
   "workspaces": ["packages/*", "packages/themes/*", "apps/*"],
   "scripts": {
     "dev": "npm run dev -w @workshell/shell-demo",
-    "dev:blob": "vite",
     "build": "npm run build -w @workshell/shell-demo",
     "test": "vitest run"
   },
