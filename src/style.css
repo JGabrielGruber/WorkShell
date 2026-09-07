@@ -359,10 +359,11 @@ body,
 .panel {
   pointer-events: auto;
   position: absolute;
-  left: var(--x);
-  top: var(--y);
+  left: 0;
+  top: 0;
   width: var(--w);
   height: var(--h);
+  transform: translate3d(var(--x), var(--y), 0);
   z-index: var(--z);
   display: flex;
   flex-direction: column;
@@ -417,11 +418,8 @@ body,
     0 24px 64px -12px rgba(0, 0, 0, 0.65);
 }
 
-/* Engine writes absolute translate3d while dragging; zero left/top so it is not added twice. */
 .panel.is-dragging,
 .panel.is-dragging[data-focus="true"] {
-  left: 0;
-  top: 0;
   will-change: transform;
   backdrop-filter: none;
   background: rgba(9, 14, 26, 0.92);
