@@ -1,0 +1,52 @@
+[data-theme="aetheris-prism"] {
+  color-scheme: light;
+
+  --color-base-100: #f7f9fb;
+  --color-base-200: #ffffff;
+  --color-base-300: #e2e8f0;
+  --color-base-content: #1e293b;
+
+  --color-primary: #0284c7;
+  --color-primary-content: #ffffff;
+  --color-secondary: #7dd3fc;
+  --color-secondary-content: #0c4a6e;
+  --color-accent: #c084fc;
+  --color-accent-content: #3b0764;
+  --color-neutral: #334155;
+  --color-neutral-content: #f8fafc;
+
+  --color-info: #0284c7;
+  --color-info-content: #ffffff;
+  --color-success: #10b981;
+  --color-success-content: #ffffff;
+  --color-warning: #f59e0b;
+  --color-warning-content: #1c1000;
+  --color-error: #ba1a1a;
+  --color-error-content: #ffffff;
+
+  --glass: rgba(255, 255, 255, 0.55);
+  --glass-card: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.8);
+  --glass-blur: 24px;
+
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-box: 16px;
+  --radius-field: 10px;
+  --radius-selector: 999px;
+  --border: 1px;
+
+  --wallpaper: url("./abstract.webp");
+}
+
+[data-theme="aetheris-prism"] #wallpaper::after {
+  background: rgba(247, 249, 251, 0.22);
+}
+
+[data-theme="aetheris-prism"] .panel {
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.9),
+    0 25px 50px -12px rgba(2, 132, 199, 0.08);
+}
