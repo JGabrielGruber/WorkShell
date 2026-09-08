@@ -8,7 +8,7 @@ describe("TASK-104 body", () => {
     const root = document.createElement("div");
     const host = createDesktop(root);
     host.boot({
-      theme: "aetheris",
+      theme: "aetheris-glass",
       seed: seedLayout,
       storage: localStorage,
       fillWidgetLayer() {},

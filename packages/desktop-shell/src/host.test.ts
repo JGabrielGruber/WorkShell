@@ -59,7 +59,7 @@ describe("createDesktop", () => {
     const root = document.createElement("div");
     const host = createDesktop(root);
     const opts = {
-      theme: "aetheris",
+      theme: "aetheris-glass",
       seed: seedLayout,
       storage: mem(),
       fillWidgetLayer: () => {},
@@ -74,7 +74,7 @@ describe("createDesktop", () => {
     const host = createDesktop(root);
     expect(() =>
       host.boot({
-        theme: "aetheris",
+        theme: "aetheris-glass",
         seed: seedLayout,
         storage: mem(),
         fillWidgetLayer: undefined as unknown as (el: HTMLElement) => void,
@@ -89,7 +89,7 @@ describe("createDesktop", () => {
     const widgets: HTMLElement[] = [];
     const bodies: Array<{ id: string; el: HTMLElement }> = [];
     const engine = host.boot({
-      theme: "aetheris",
+      theme: "aetheris-glass",
       seed: seedLayout,
       storage: mem(),
       fillWidgetLayer(el) {
@@ -104,7 +104,7 @@ describe("createDesktop", () => {
     expect(bodies).toEqual([{ id: "task-104", el: expect.any(HTMLElement) }]);
     expect(bodies[0].el.className).toBe("panel-body");
     expect(bodies[0].el.childNodes.length).toBe(0);
-    expect(host.workspace.dataset.theme).toBe("aetheris");
+    expect(host.workspace.dataset.theme).toBe("aetheris-glass");
     expect(host.engine).toBe(engine);
     expect(engine.node("task-104").querySelector(".inspector")).toBeNull();
     host.setTheme("other");
@@ -115,7 +115,7 @@ describe("createDesktop", () => {
     const root = document.createElement("div");
     const host = createDesktop(root);
     host.boot({
-      theme: "aetheris",
+      theme: "aetheris-glass",
       seed: seedLayout,
       storage: mem(),
       fillWidgetLayer() {},
@@ -130,7 +130,7 @@ describe("createDesktop", () => {
     const host = createDesktop(root);
     expect(() =>
       host.boot({
-        theme: "aetheris",
+        theme: "aetheris-glass",
         seed: seedLayout,
         storage: mem(),
         fillWidgetLayer() {},

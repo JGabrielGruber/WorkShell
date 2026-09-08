@@ -2,7 +2,7 @@
 
 Compositor-first desktop shell (vanilla TypeScript) with an Aetheris theme and a seed demo. Not a full SPA. Not a WebGPU renderer.
 
-Packages: `@workshell/compositor`, `@workshell/desktop-shell`, `@workshell/theme-aetheris`. App: `@workshell/shell-demo`.
+Packages: `@workshell/compositor`, `@workshell/desktop-shell`, `@workshell/theme-aetheris-glass`, `@workshell/theme-aetheris-prism`. App: `@workshell/shell-demo`.
 
 ## Run
 
@@ -23,6 +23,7 @@ npm test
 
 1. Desktop shows wallpaper, four kanban lanes, taskbar, one **TASK-104** window. The board stays visible around the window.
 1b. Click another card (e.g. TASK-112) — a second window opens, offset from the first. Click the same card again — that window focuses. Close it, click the card — it reopens.
+1c. Taskbar **Glass** / **Prism** switches the skin for this session (reload returns to Glass). Layout persist does not store the theme.
 2. Drag the window (titlebar) and resize from the bottom-right handle.
 3. Maximize — fills the usable desktop and stops above the taskbar. Unmaximize restores the float rect.
 4. Drag a maximized titlebar — it unmaximizes then floats.

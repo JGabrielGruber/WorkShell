@@ -11,7 +11,8 @@
   "dependencies": {
     "@workshell/compositor": "*",
     "@workshell/desktop-shell": "*",
-    "@workshell/theme-aetheris": "*"
+    "@workshell/theme-aetheris-glass": "*",
+    "@workshell/theme-aetheris-prism": "*"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.13",

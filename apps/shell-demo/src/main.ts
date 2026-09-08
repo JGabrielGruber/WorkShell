@@ -1,10 +1,12 @@
 import { createDesktop } from "@workshell/desktop-shell";
 import "@workshell/compositor/compositor.css";
 import "@workshell/desktop-shell/shell.css";
-import "@workshell/theme-aetheris/tokens.css";
+import "@workshell/theme-aetheris-glass/tokens.css";
+import "@workshell/theme-aetheris-prism/tokens.css";
 import "./demo.css";
 import { seedLayout } from "./seed";
 import { mountKanban } from "./widgets/kanban";
+import { mountThemeSwitch } from "./widgets/theme-switch";
 import { fillWindow } from "./windows/task-window";
 
 const app = document.querySelector<HTMLDivElement>("#app");
@@ -12,7 +14,7 @@ if (!app) throw new Error("#app missing");
 
 const host = createDesktop(app);
 const engine = host.boot({
-  theme: "aetheris",
+  theme: "aetheris-glass",
   seed: seedLayout,
   fillWidgetLayer(el) {
     mountKanban(el, {
@@ -25,5 +27,9 @@ const engine = host.boot({
     fillWindow(id, el);
   },
 });
+
+const taskbar = host.workspace.querySelector("#taskbar");
+if (!(taskbar instanceof HTMLElement)) throw new Error("#taskbar missing");
+mountThemeSwitch(taskbar, (name) => host.setTheme(name));
 
 Object.assign(window, { workshell: engine });
