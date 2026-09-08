@@ -51,12 +51,15 @@ function sanitizePanel(id: string, raw: PanelState): PanelState {
 
 export function sanitizeLayout(parsed: LayoutState, seed: () => LayoutState): LayoutState {
   if (!parsed.slots || !parsed.panels) return seed();
-  const known = new Set(Object.keys(seed().panels));
+  const seedIds = Object.keys(seed().panels);
   const panels: Record<string, PanelState> = {};
   for (const id of Object.keys(parsed.panels)) {
-    if (!known.has(id)) continue;
-    panels[id] = sanitizePanel(id, parsed.panels[id]);
+    if (!id) continue;
+    const raw = parsed.panels[id];
+    if (!raw || typeof raw !== "object") continue;
+    panels[id] = sanitizePanel(id, raw);
   }
+  const known = new Set([...seedIds, ...Object.keys(panels)]);
   const closedKnown = (parsed.closed ?? []).filter((id) => known.has(id));
   const overlayRaw = parsed.overlay;
   const overlay =

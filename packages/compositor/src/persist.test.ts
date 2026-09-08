@@ -66,28 +66,46 @@ describe("persist", () => {
     expect(loaded.panels.alpha.x).toBe(80);
   });
 
-  it("drops unknown panel ids against the seed allowlist", () => {
+  it("keeps well-formed panel ids that are not in the seed", () => {
     const storage = mem();
-    const state = fixtureSeed() as ReturnType<typeof fixtureSeed> & {
-      panels: Record<string, unknown>;
-    };
+    const state = fixtureSeed();
     state.panels.ghost = {
       id: "ghost",
       uid: "x",
       title: "Ghost",
       mode: "float",
-      x: 0,
-      y: 0,
-      w: 10,
-      h: 10,
-      z: 1,
+      x: 10,
+      y: 20,
+      w: 300,
+      h: 220,
+      z: 4,
     };
     state.slots.left.order = ["ghost", "alpha"];
     state.closed = ["nope"];
+    saveLayout(storage, state);
+    const loaded = loadLayout(storage, fixtureSeed);
+    expect(loaded.panels.ghost).toMatchObject({
+      id: "ghost",
+      title: "Ghost",
+      mode: "float",
+      x: 10,
+      y: 20,
+      w: 300,
+      h: 220,
+    });
+    expect(loaded.slots.left.order).toEqual(["ghost", "alpha"]);
+    expect(loaded.closed).toEqual([]);
+  });
+
+  it("drops stored panels that are not objects", () => {
+    const storage = mem();
+    const state = fixtureSeed() as ReturnType<typeof fixtureSeed> & {
+      panels: Record<string, unknown>;
+    };
+    state.panels.ghost = "nope";
     saveLayout(storage, state as ReturnType<typeof fixtureSeed>);
     const loaded = loadLayout(storage, fixtureSeed);
     expect(loaded.panels.ghost).toBeUndefined();
-    expect(loaded.slots.left.order).toEqual(["alpha"]);
-    expect(loaded.closed).toEqual([]);
+    expect(loaded.panels.alpha).toBeDefined();
   });
 });
