@@ -22,6 +22,7 @@ npm test
 ## Acceptance demo
 
 1. Desktop shows wallpaper, four kanban lanes, taskbar, one **TASK-104** window. The board stays visible around the window.
+1b. Click another card (e.g. TASK-112) — a second window opens, offset from the first. Click the same card again — that window focuses. Close it, click the card — it reopens.
 2. Drag the window (titlebar) and resize from the bottom-right handle.
 3. Maximize — fills the usable desktop and stops above the taskbar. Unmaximize restores the float rect.
 4. Drag a maximized titlebar — it unmaximizes then floats.
