@@ -224,7 +224,7 @@
 .panel.is-dragging,
 .panel.is-dragging[data-focus="true"] {
   backdrop-filter: none;
-  background: var(--color-base-100);
+  background: rgb(from var(--color-base-300) r g b / 0.95);
   box-shadow: 0 0 0 1px var(--color-primary);
 }
 

@@ -6,12 +6,12 @@
   --color-base-300: #1a2233;
   --color-base-content: #f0f4fa;
 
-  --color-primary: #00f0ff;
+  --color-primary: #7dd3fc;
   --color-primary-content: #041018;
   --color-secondary: #8a3ffc;
   --color-secondary-content: #f5efff;
-  --color-accent: #00ff85;
-  --color-accent-content: #04140c;
+  --color-accent: #041018;
+  --color-accent-content: #38bdf8;
   --color-neutral: #1a2030;
   --color-neutral-content: #f0f4fa;
 
@@ -25,9 +25,9 @@
   --color-error-content: #3b0a08;
 
   --glass: rgba(16, 18, 28, 0.45);
-  --glass-card: rgba(16, 18, 28, 0.55);
+  --glass-card: rgba(16, 18, 28, 0.25);
   --glass-border: rgba(255, 255, 255, 0.12);
-  --glass-blur: 40px;
+  --glass-blur: 20px;
 
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
@@ -38,9 +38,9 @@
   --radius-selector: 999px;
   --border: 1px;
 
-  --wallpaper: url("./glass.webp");
+  --wallpaper: url("./glass.jpeg");
 }
 
 [data-theme="aetheris-glass"] #wallpaper::after {
-  background: rgba(5, 10, 20, 0.38);
+  background: rgba(5, 10, 20, 0.12);
 }
