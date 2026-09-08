@@ -7,12 +7,14 @@ export type {
   EngineHosts,
   LayoutState,
   Mode,
+  OpenOptions,
   OverlayState,
   PanelState,
   SlotId,
   SlotState,
 } from "@workshell/compositor";
 export {
+  CASCADE_PX,
   DEFAULT_FLOAT,
   DEFAULT_LEFT_W,
   DEFAULT_RIGHT_W,

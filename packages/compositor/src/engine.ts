@@ -1,12 +1,14 @@
 import type { EngineHosts } from "./hosts";
 import { loadLayout, saveLayout } from "./persist";
 import {
+  CASCADE_PX,
   DEFAULT_FLOAT,
   FLOAT_OUT_THRESHOLD_PX,
   MIN_FLOAT_H,
   MIN_FLOAT_W,
   SNAP_EDGE_PX,
   type LayoutState,
+  type OpenOptions,
   type SlotId,
 } from "./types";
 
@@ -28,6 +30,7 @@ export function snapZone(
 export class WorkspaceEngine {
   state: LayoutState;
   private nodes = new Map<string, HTMLElement>();
+  private createPanel: ((id: string) => HTMLElement) | null = null;
   private drag: null | {
     id: string;
     pointerId: number;
@@ -68,14 +71,11 @@ export class WorkspaceEngine {
   }
 
   boot(createPanel: (id: string) => HTMLElement): void {
+    this.createPanel = createPanel;
     this.applySlotWidths();
     for (const id of Object.keys(this.state.panels)) {
       if (this.state.closed.includes(id)) continue;
-      const el = createPanel(id);
-      this.nodes.set(id, el);
-      this.state.panels[id].uid = el.dataset.uid ?? "";
-      this.bindPanel(el);
-      this.applyMode(id);
+      this.materialize(id);
     }
     this.renderTabs();
     this.renderTaskbar();
@@ -100,6 +100,59 @@ export class WorkspaceEngine {
 
   persist(): void {
     saveLayout(this.storage, this.state);
+  }
+
+  private materialize(id: string): void {
+    if (!this.createPanel) throw new Error("boot() required");
+    const el = this.createPanel(id);
+    this.nodes.set(id, el);
+    this.state.panels[id].uid = el.dataset.uid ?? "";
+    this.bindPanel(el);
+    this.applyMode(id);
+  }
+
+  private cascadeRect(): { x: number; y: number; w: number; h: number } {
+    const n = Object.keys(this.state.panels).filter(
+      (id) => !this.state.closed.includes(id),
+    ).length;
+    return {
+      x: DEFAULT_FLOAT.x + n * CASCADE_PX,
+      y: DEFAULT_FLOAT.y + n * CASCADE_PX,
+      w: DEFAULT_FLOAT.w,
+      h: DEFAULT_FLOAT.h,
+    };
+  }
+
+  open(id: string, opts?: OpenOptions): void {
+    if (!this.createPanel) throw new Error("boot() required");
+    if (!id) return;
+    const panel = this.state.panels[id];
+    const closed = this.state.closed.includes(id);
+    if (panel && !closed) {
+      if (panel.mode === "hidden") this.show(id);
+      else this.focus(id);
+      return;
+    }
+    if (panel && closed) {
+      this.state.closed = this.state.closed.filter((x) => x !== id);
+      this.materialize(id);
+      this.float(id);
+      return;
+    }
+    const rect = this.cascadeRect();
+    this.state.panels[id] = {
+      id,
+      uid: "",
+      title: opts?.title ?? id,
+      mode: "float",
+      x: rect.x,
+      y: rect.y,
+      w: rect.w,
+      h: rect.h,
+      z: this.state.nextZ++,
+    };
+    this.materialize(id);
+    this.float(id);
   }
 
   /**

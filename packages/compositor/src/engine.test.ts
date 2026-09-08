@@ -41,7 +41,7 @@ function createTestPanel(id: string): HTMLElement {
   const el = document.createElement("section");
   el.className = "panel";
   el.dataset.id = id;
-  el.dataset.uid = `uid-${id}`;
+  el.dataset.uid = `uid-${id}-${Math.random().toString(36).slice(2, 10)}`;
   el.innerHTML = `<div class="panel-titlebar"><span class="panel-title"></span></div><div class="panel-body"></div><div class="resize-handle" data-resize="1"></div>`;
   el.querySelector(".panel-title")!.textContent = id === "alpha" ? "Alpha" : id;
   return el;
@@ -130,6 +130,75 @@ describe("WorkspaceEngine", () => {
     expect(engine.state.closed).toContain("alpha");
     expect(engine.state.panels.alpha).toBeDefined();
     expect(hosts.taskbar.querySelector("button")).toBeNull();
+  });
+
+  it("open before boot throws", () => {
+    const hosts = fakeHosts();
+    const engine = new WorkspaceEngine(hosts, localStorage, fixtureSeed);
+    expect(() => engine.open("beta")).toThrow(/boot/);
+  });
+
+  it("open creates a cascaded float and a taskbar pill", () => {
+    const { engine, hosts } = boot();
+    engine.open("beta", { title: "Beta" });
+    const el = engine.node("beta");
+    expect(el.isConnected).toBe(true);
+    expect(el.parentElement).toBe(hosts.floatLayer);
+    expect(engine.state.panels.beta).toMatchObject({
+      id: "beta",
+      title: "Beta",
+      mode: "float",
+      x: 96 + 28,
+      y: 48 + 28,
+      w: 720,
+      h: 520,
+    });
+    expect(engine.state.closed).not.toContain("beta");
+    const pills = [...hosts.taskbar.querySelectorAll("button")].map((b) => b.textContent);
+    expect(pills.some((t) => t?.includes("Beta"))).toBe(true);
+    expect(pills.some((t) => t?.includes("Alpha"))).toBe(true);
+  });
+
+  it("open on a live panel focuses and does not duplicate the node", () => {
+    const { engine, hosts } = boot();
+    engine.open("beta", { title: "Beta" });
+    const first = engine.node("beta");
+    const uid = first.dataset.uid;
+    const z = engine.state.panels.beta.z;
+    engine.open("beta");
+    expect(engine.node("beta")).toBe(first);
+    expect(first.dataset.uid).toBe(uid);
+    expect(engine.state.panels.beta.z).toBeGreaterThan(z);
+    expect(hosts.floatLayer.querySelectorAll('[data-id="beta"]').length).toBe(1);
+  });
+
+  it("open after close recreates the node at the stored rect", () => {
+    const { engine } = boot();
+    engine.open("beta", { title: "Beta" });
+    engine.float("beta", { x: 40, y: 50, w: 300, h: 220 });
+    const oldUid = engine.node("beta").dataset.uid;
+    engine.close("beta");
+    expect(engine.state.closed).toContain("beta");
+    engine.open("beta");
+    expect(engine.state.closed).not.toContain("beta");
+    const el = engine.node("beta");
+    expect(el.isConnected).toBe(true);
+    expect(el.dataset.uid).not.toBe(oldUid);
+    expect(engine.state.panels.beta).toMatchObject({
+      mode: "float",
+      x: 40,
+      y: 50,
+      w: 300,
+      h: 220,
+    });
+  });
+
+  it("open on a hidden panel shows it", () => {
+    const { engine } = boot();
+    engine.hide("alpha");
+    engine.open("alpha");
+    expect(engine.state.panels.alpha.mode).toBe("float");
+    expect(engine.node("alpha").style.display).not.toBe("none");
   });
 });
 

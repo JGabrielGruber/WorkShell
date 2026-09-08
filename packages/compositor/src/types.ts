@@ -9,6 +9,9 @@ export const DEFAULT_RIGHT_W = 360;
 export const TASKBAR_H = 64;
 export const TASKBAR_GAP = 12;
 export const DEFAULT_FLOAT = { x: 96, y: 48, w: 720, h: 520 } as const;
+export const CASCADE_PX = 28;
+
+export type OpenOptions = { title?: string };
 
 export type SlotId = "left" | "center" | "right";
 export type Mode = "dock" | "float" | "overlay" | "maximized" | "hidden";

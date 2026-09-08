@@ -6,6 +6,7 @@ export type {
   SlotId,
   SlotState,
   OverlayState,
+  OpenOptions,
 } from "./types";
 export {
   STORAGE_KEY,
@@ -18,6 +19,7 @@ export {
   TASKBAR_H,
   TASKBAR_GAP,
   DEFAULT_FLOAT,
+  CASCADE_PX,
 } from "./types";
 export { loadLayout, saveLayout, sanitizeLayout } from "./persist";
 export { WorkspaceEngine, snapZone } from "./engine";
