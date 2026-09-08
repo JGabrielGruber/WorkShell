@@ -1,0 +1,46 @@
+[data-theme="aetheris-glass"] {
+  color-scheme: dark;
+
+  --color-base-100: #0b0e14;
+  --color-base-200: #121826;
+  --color-base-300: #1a2233;
+  --color-base-content: #f0f4fa;
+
+  --color-primary: #00f0ff;
+  --color-primary-content: #041018;
+  --color-secondary: #8a3ffc;
+  --color-secondary-content: #f5efff;
+  --color-accent: #00ff85;
+  --color-accent-content: #04140c;
+  --color-neutral: #1a2030;
+  --color-neutral-content: #f0f4fa;
+
+  --color-info: #38bdf8;
+  --color-info-content: #082f49;
+  --color-success: #27c93f;
+  --color-success-content: #05210c;
+  --color-warning: #ffbd2e;
+  --color-warning-content: #3b2a00;
+  --color-error: #ff5f56;
+  --color-error-content: #3b0a08;
+
+  --glass: rgba(16, 18, 28, 0.45);
+  --glass-card: rgba(16, 18, 28, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-blur: 40px;
+
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-box: 16px;
+  --radius-field: 8px;
+  --radius-selector: 999px;
+  --border: 1px;
+
+  --wallpaper: url("./glass.webp");
+}
+
+[data-theme="aetheris-glass"] #wallpaper::after {
+  background: rgba(5, 10, 20, 0.38);
+}
