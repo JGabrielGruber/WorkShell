@@ -99,11 +99,11 @@ describe("persist", () => {
 
   it("drops stored panels that are not objects", () => {
     const storage = mem();
-    const state = fixtureSeed() as ReturnType<typeof fixtureSeed> & {
-      panels: Record<string, unknown>;
-    };
-    state.panels.ghost = "nope";
-    saveLayout(storage, state as ReturnType<typeof fixtureSeed>);
+    const state = fixtureSeed();
+    storage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ ...state, panels: { ...state.panels, ghost: "nope" } }),
+    );
     const loaded = loadLayout(storage, fixtureSeed);
     expect(loaded.panels.ghost).toBeUndefined();
     expect(loaded.panels.alpha).toBeDefined();
