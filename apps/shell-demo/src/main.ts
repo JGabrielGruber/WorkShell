@@ -5,7 +5,7 @@ import "@workshell/theme-aetheris/tokens.css";
 import "./demo.css";
 import { seedLayout } from "./seed";
 import { mountKanban } from "./widgets/kanban";
-import { fillTask104 } from "./windows/task-104";
+import { fillWindow } from "./windows/task-window";
 
 const app = document.querySelector<HTMLDivElement>("#app");
 if (!app) throw new Error("#app missing");
@@ -14,9 +14,15 @@ const host = createDesktop(app);
 const engine = host.boot({
   theme: "aetheris",
   seed: seedLayout,
-  fillWidgetLayer: mountKanban,
+  fillWidgetLayer(el) {
+    mountKanban(el, {
+      open(id, title) {
+        host.engine.open(id, { title });
+      },
+    });
+  },
   fillPanelBody(id, el) {
-    if (id === "task-104") fillTask104(el);
+    fillWindow(id, el);
   },
 });
 

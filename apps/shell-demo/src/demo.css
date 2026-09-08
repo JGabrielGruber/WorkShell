@@ -250,3 +250,48 @@ pre {
   align-items: center;
   justify-content: center;
 }
+
+button.kanban-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+button.kanban-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(78, 230, 224, 0.45);
+}
+
+button.kanban-card:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+.task-doc {
+  padding: 20px 24px;
+  color: var(--text, #e8eef7);
+}
+
+.task-doc-id {
+  margin: 0 0 8px;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--cyan, #4ee6e0);
+}
+
+.task-doc h1 {
+  margin: 0 0 8px;
+  font-family: var(--font-display, inherit);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.task-doc-meta {
+  margin: 0 0 16px;
+  font-size: 12px;
+  opacity: 0.7;
+}

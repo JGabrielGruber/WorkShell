@@ -1,81 +1,63 @@
-export function mountKanban(host: HTMLElement): void {
+import { TASKS, taskTitle } from "../tasks";
+
+export type KanbanOptions = {
+  open?: (id: string, title: string) => void;
+};
+
+const LANES = [
+  "Backlog / Ideias",
+  "Em Progresso (Sprint 04)",
+  "Revisão",
+  "Concluído",
+] as const;
+
+export function mountKanban(host: HTMLElement, opts: KanbanOptions = {}): void {
   host.replaceChildren();
   const board = document.createElement("div");
   board.id = "kanban";
   board.dataset.purpose = "kanban-lanes-container";
-  const lanes: Array<{ title: string; count: string; body: string }> = [
-    {
-      title: "Backlog / Ideias",
-      count: "3",
-      body: `<article class="kanban-card">
-        <div class="kanban-card-meta"><span>Arquitetura</span><span>TASK-112</span></div>
-        <h3>Suporte nativo a WebGPU compute shaders</h3>
-        <p>Avaliar fallback transparente para sistemas legados sem suporte a float16.</p>
-      </article>
-      <article class="kanban-card">
-        <div class="kanban-card-meta"><span>Design System</span><span>TASK-115</span></div>
-        <h3>Refino dos tokens de reflexão translúcida</h3>
-      </article>
-      <article class="kanban-card">
-        <div class="kanban-card-meta"><span>Pesquisa</span><span>TASK-118</span></div>
-        <h3>Benchmark de compositor 180 Hz vs VSync</h3>
-      </article>`,
-    },
-    {
-      title: "Em Progresso (Sprint 04)",
-      count: "2",
-      body: `<article class="kanban-card" data-purpose="active-target-card">
-        <div class="kanban-card-meta"><span>Em Foco</span><span>TASK-104</span></div>
-        <h3>Integração de Pipelines de Renderização Neural</h3>
-        <p>Conexão direta dos buffers de textura com o pipeline ONNX Runtime Web via SIMD.</p>
-      </article>
-      <article class="kanban-card">
-        <div class="kanban-card-meta"><span>Frontend</span><span>TASK-082</span></div>
-        <h3>Refatoração Auth &amp; Handshake OIDC</h3>
-      </article>`,
-    },
-    {
-      title: "Revisão",
-      count: "2",
-      body: `<article class="kanban-card">
-        <div class="kanban-card-meta"><span>DevOps</span><span>TASK-098</span></div>
-        <h3>Cluster Kubernetes K3s Edge Autoscaling</h3>
-        <p>Testes de carga sob latência de rede simulada com link 4G de alta perda.</p>
-      </article>
-      <article class="kanban-card">
-        <div class="kanban-card-meta"><span>Backend</span><span>TASK-101</span></div>
-        <h3>Contrato gRPC do inspector TASK-104</h3>
-      </article>`,
-    },
-    {
-      title: "Concluído",
-      count: "4",
-      body: `<article class="kanban-card">
-        <div class="kanban-card-meta"><span>Deploy</span><span>TASK-077</span></div>
-        <h3>Mecanismo de Cache WASM L2</h3>
-        <p>Redução de overhead em 42ms para inicializações a frio.</p>
-      </article>
-      <article class="kanban-card">
-        <div class="kanban-card-meta"><span>Shell</span><span>TASK-071</span></div>
-        <h3>Shader de vidro para lanes</h3>
-      </article>
-      <article class="kanban-card">
-        <div class="kanban-card-meta"><span>Persistência</span><span>TASK-065</span></div>
-        <h3>Layout seed no localStorage</h3>
-      </article>
-      <article class="kanban-card">
-        <div class="kanban-card-meta"><span>Chrome</span><span>TASK-058</span></div>
-        <h3>Host overlay-dim / overlay-host</h3>
-      </article>`,
-    },
-  ];
-  for (const lane of lanes) {
+  for (const lane of LANES) {
+    const items = TASKS.filter((t) => t.lane === lane);
     const section = document.createElement("section");
     section.dataset.purpose = "kanban-lane";
     section.className = "kanban-lane";
-    section.innerHTML = `<div class="kanban-lane-head"><h2></h2><span class="kanban-count"></span></div><div class="kanban-lane-body">${lane.body}</div>`;
-    section.querySelector("h2")!.textContent = lane.title;
-    section.querySelector(".kanban-count")!.textContent = lane.count;
+    const head = document.createElement("div");
+    head.className = "kanban-lane-head";
+    const h2 = document.createElement("h2");
+    h2.textContent = lane;
+    const count = document.createElement("span");
+    count.className = "kanban-count";
+    count.textContent = String(items.length);
+    head.append(h2, count);
+    const body = document.createElement("div");
+    body.className = "kanban-lane-body";
+    for (const task of items) {
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "kanban-card";
+      card.dataset.taskId = task.id;
+      if (task.id === "task-104") card.dataset.purpose = "active-target-card";
+      const meta = document.createElement("div");
+      meta.className = "kanban-card-meta";
+      const tag = document.createElement("span");
+      tag.textContent = task.tag;
+      const idEl = document.createElement("span");
+      idEl.textContent = taskTitle(task.id);
+      meta.append(tag, idEl);
+      const h3 = document.createElement("h3");
+      h3.textContent = task.title;
+      card.append(meta, h3);
+      if (task.body) {
+        const p = document.createElement("p");
+        p.textContent = task.body;
+        card.append(p);
+      }
+      if (opts.open) {
+        card.addEventListener("click", () => opts.open!(task.id, taskTitle(task.id)));
+      }
+      body.append(card);
+    }
+    section.append(head, body);
     board.append(section);
   }
   host.append(board);

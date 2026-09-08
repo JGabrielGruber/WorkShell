@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createDesktop } from "@workshell/desktop-shell";
 import { seedLayout } from "../seed";
 import { mountKanban } from "./kanban";
@@ -26,5 +26,17 @@ describe("kanban widget", () => {
     ]);
     expect(layer.querySelector("[data-id]")).toBeNull();
     expect(layer.querySelector(".panel")).toBeNull();
+    expect(layer.querySelector("[data-task-id='task-104']")).toBeTruthy();
+  });
+
+  it("clicking a card calls open with id and chrome title", () => {
+    const open = vi.fn();
+    const root = document.createElement("div");
+    document.body.append(root);
+    mountKanban(root, { open });
+    const card = root.querySelector<HTMLElement>("[data-task-id='task-112']");
+    expect(card).toBeTruthy();
+    card!.click();
+    expect(open).toHaveBeenCalledWith("task-112", "TASK-112");
   });
 });
