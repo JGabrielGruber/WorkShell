@@ -1,8 +1,28 @@
+#workspace {
+  --taskbar-h: 64px;
+  --taskbar-gap: 12px;
+  --left-w: 320px;
+  --right-w: 360px;
+  background: var(--color-base-100);
+  color: var(--color-base-content);
+  font-family: var(--font-sans);
+}
+
 #wallpaper {
   position: absolute;
   inset: 0;
   z-index: 0;
   overflow: hidden;
+  background-image: var(--wallpaper);
+  background-size: cover;
+  background-position: center;
+}
+
+#wallpaper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
 #widget-layer {
@@ -50,6 +70,14 @@
   padding: 2px 10px;
   font-size: 11px;
   cursor: pointer;
+  border: var(--border) solid var(--glass-border);
+  background: transparent;
+  color: color-mix(in srgb, var(--color-base-content) 55%, transparent);
+}
+
+.slot-tab[data-active="true"] {
+  color: var(--color-base-content);
+  background: var(--glass);
 }
 
 .slot-body {
@@ -88,12 +116,31 @@
   gap: 8px;
   padding: 8px 14px;
   max-width: calc(100vw - 24px);
+  border-radius: var(--radius-box);
+  background: var(--glass);
+  backdrop-filter: blur(var(--glass-blur)) saturate(190%);
+  border: var(--border) solid var(--glass-border);
 }
 
 .task-pill {
   padding: 6px 14px;
   font-size: 11px;
   cursor: pointer;
+  border: var(--border) solid var(--glass-border);
+  background: var(--glass-card);
+  color: var(--color-base-content);
+  border-radius: var(--radius-selector);
+  font-family: var(--font-display);
+}
+
+.task-pill[data-mode="float"],
+.task-pill[data-mode="maximized"] {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--color-primary) 35%, transparent);
+}
+
+.task-pill[data-mode="hidden"] {
+  opacity: 0.7;
 }
 
 #float-layer {
@@ -108,11 +155,13 @@
   pointer-events: none;
   z-index: 10000;
   display: none;
-  border-radius: 12px;
+  border-radius: var(--radius-box);
   left: var(--snap-x, 0px);
   top: var(--snap-y, 0px);
   width: var(--snap-w, 0px);
   height: var(--snap-h, 0px);
+  border: var(--border) dashed var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
 }
 
 #snap-preview[data-on="true"] {
@@ -125,6 +174,7 @@
   display: none;
   pointer-events: none;
   z-index: 40;
+  background: color-mix(in srgb, var(--color-base-100) 62%, transparent);
 }
 
 #overlay-dim[data-on="true"] {
@@ -149,6 +199,35 @@
   pointer-events: auto;
 }
 
+.panel {
+  background: var(--glass);
+  color: var(--color-base-content);
+  border-radius: var(--radius-box);
+  border: var(--border) solid var(--glass-border);
+  box-shadow:
+    0 24px 64px -12px color-mix(in srgb, var(--color-base-100) 65%, #000),
+    inset 0 1px 0 var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur)) saturate(210%);
+}
+
+.panel[data-mode="maximized"] {
+  border-radius: 0;
+}
+
+.panel[data-focus="true"] {
+  box-shadow:
+    0 0 0 1px var(--color-primary),
+    0 0 18px color-mix(in srgb, var(--color-primary) 35%, transparent),
+    0 24px 64px -12px color-mix(in srgb, var(--color-base-100) 65%, #000);
+}
+
+.panel.is-dragging,
+.panel.is-dragging[data-focus="true"] {
+  backdrop-filter: none;
+  background: var(--color-base-100);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
 .panel-titlebar {
   display: flex;
   align-items: center;
@@ -158,10 +237,14 @@
   cursor: move;
   user-select: none;
   flex-shrink: 0;
+  border-bottom: var(--border) solid var(--glass-border);
+  font-family: var(--font-display);
+  font-size: 13px;
 }
 
 .panel-title {
   flex: 1;
+  letter-spacing: 0.04em;
 }
 
 .traffic {
@@ -177,6 +260,19 @@
   border: none;
   border-radius: 50%;
   cursor: pointer;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.35);
+}
+
+.tl-close {
+  background: var(--color-error);
+}
+
+.tl-hide {
+  background: var(--color-warning);
+}
+
+.tl-max {
+  background: var(--color-success);
 }
 
 .panel-actions {
@@ -185,10 +281,13 @@
 }
 
 .panel-actions button {
-  border-radius: 6px;
+  border-radius: var(--radius-field);
   font-size: 10px;
   padding: 2px 6px;
   cursor: pointer;
+  border: var(--border) solid var(--glass-border);
+  background: transparent;
+  color: color-mix(in srgb, var(--color-base-content) 55%, transparent);
 }
 
 .panel-body {
@@ -202,4 +301,12 @@
 .panel-body:not(:has(.inspector)) {
   overflow: auto;
   padding: 10px;
+}
+
+.resize-handle {
+  background: linear-gradient(
+    135deg,
+    transparent 50%,
+    color-mix(in srgb, var(--color-primary) 35%, transparent) 50%
+  );
 }
