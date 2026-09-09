@@ -560,6 +560,29 @@ These stay vision “later” or dogfood 2+. Do not sneak them into the PR that 
 | Widget registry | Fills remain demo callbacks |
 | Second registered scheme in the demo | The **API** allows it; the demo does not ship one |
 
+## Proof holes (after dogfood 1)
+
+Landed on `feat/surface-contract` (2026-09-09). The spine is in the tree; these rows are **claimed by this spec and not locked by tests**. They are not new organs and not open questions. A later session without this chat should read this table before writing Settings (or any second guest). Do not “fix” them by growing tokens, editing desktop-shell/compositor, or adding `probe.css`.
+
+| Claim (this spec) | Unproven | Who trips |
+|---|---|---|
+| Field fill recipe (`--color-base-100` + `--border` + `--color-base-300` + `--radius-field`) | CSS only styles `input[type="text"]`. Checkbox is UA chrome. | Settings boolean fields |
+| Icon group header is `font-display` or smaller sans | `.ws-icon-group` has no type rule | Settings icon dock labels |
+| Navigator chrome / docks use base/content/**border** recipes | `.nav-chrome` and `.nav-dock` are layout-only (no hairline) | Settings docks share one ground |
+| Click selects (`aria-selected` moves) | Tree/list call `onSelect` only; paint is construct-time `selectedId`. Consumer must rebuild. | A Settings tree that keeps the same node |
+| Path match `startsWith(path + "/")` | Tests cover `/fields` vs `/fieldsx` vs `/`, not `/fields/x` | Nested Settings pages |
+| Address Enter → `go()`; Back/Forward restore href **and docks** | Navigator tests call `nav.go` / `nav.back`; probe `mount.test` never presses Enter or Back | Settings address bar and history buttons |
+| `ViewContext.go` is Navigator `go` | Fixture views ignore `ctx` | A Settings tree that navigates via `ctx.go` |
+| Drop search/hash; equal-current `go` is no-op | `canonical` exists; untested | Settings `?tab=` / `#hash` |
+| `fieldsPage` host-agnostic **and** restyles from `[data-theme]` | Two parent nodes get `.ws-page`; neither is under `#workspace[data-theme]`. Glass→Prism of kit is acceptance-only. | Settings page in a themed host |
+| Field `id` is `ws-field-${name}` | Two live `fieldsPage()` (or two Address fields) collide in one document | A second host of the same factory |
+| `fillPanelBody("probe")` on boot; tree **and** icons; Back after Fields | `mountProbe(div)` only: tree present, first `[data-id="/fields"]` (leading), no icons assert, no Back, no `createDesktop` fill | Dropping the `probe` branch in `main.ts` would not fail these tests |
+| Empty trailing still occupies 280px | CSS has no `display: none`; test does not forbid it | Two-dock Settings still owes a trailing column |
+| Kit/navigator under `.panel-body:not(:has(.inspector))` | `.nav { height: 100% }` never mounted in panel chrome in tests | Settings in a real panel (padding + overflow vs 100% height) |
+| Existing `workshell.layout.v1` without `probe` | Seed test calls `seedLayout()` in memory only | A Settings window will not appear until persist is cleared (same rule as Probe; untested) |
+
+Rebuild-per-`go` and “demo ships only `probe:`” stay in **What this spec does not achieve**. Do not promote them into this table.
+
 ## Relationship to existing specs
 
 | Spec | Still the law for |
@@ -575,4 +598,4 @@ This document does not supersede them. It adds kit + navigator + probe, and free
 
 ## Open questions
 
-None. Probe prefix, frozen tokens, self-style recipes, and “Settings is the next organ” were decided in conversation (José, 2026-09-09).
+None on the decisions (probe prefix, frozen tokens, self-style kit, Settings is the next organ). Proof holes after landing are named above — not reopened choices.
