@@ -1,3 +1,6 @@
+import "@workshell/theme";
+import "./compositor.css";
+
 export type { EngineHosts } from "./hosts";
 export type {
   LayoutState,

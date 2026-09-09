@@ -3,9 +3,16 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-const css = readFileSync(join(dirname(fileURLToPath(import.meta.url)), "kit.css"), "utf8");
+const dir = dirname(fileURLToPath(import.meta.url));
+const css = readFileSync(join(dir, "kit.css"), "utf8");
+const index = readFileSync(join(dir, "index.ts"), "utf8");
 
 describe("kit.css pigment", () => {
+  it("imports the theme engine and own css from JS", () => {
+    expect(index).toContain('import "@workshell/theme"');
+    expect(index).toContain('import "./kit.css"');
+  });
+
   it("uses tokens only", () => {
     expect(css).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
     expect(css).not.toMatch(/rgba?\(/);
@@ -31,7 +38,8 @@ describe("kit.css pigment", () => {
     expect(css).toContain("var(--radius-box)");
     expect(css).toContain("var(--radius-field)");
     expect(css).toContain("var(--radius-selector)");
-    expect(css).toContain("var(--border)");
-    expect(css).toContain("color-mix(in srgb, var(--color-primary) 35%, var(--color-base-200))");
+    expect(css).toContain("var(--shadow)");
+    expect(css).toContain("var(--shadow-inner)");
   });
 });
+

@@ -1,3 +1,6 @@
+import "@workshell/theme";
+import "./shell.css";
+
 export { buildWorkspace, slot } from "./chrome";
 export { createPanelChrome } from "./panel-chrome";
 export { createDesktop } from "./host";

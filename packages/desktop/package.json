@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@workshell/compositor": "*",
-    "@workshell/session": "*"
+    "@workshell/session": "*",
+    "@workshell/theme": "*"
   }
 }

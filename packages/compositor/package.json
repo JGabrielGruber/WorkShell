@@ -8,5 +8,8 @@
   "exports": {
     ".": "./src/index.ts",
     "./compositor.css": "./src/compositor.css"
+  },
+  "dependencies": {
+    "@workshell/theme": "*"
   }
 }

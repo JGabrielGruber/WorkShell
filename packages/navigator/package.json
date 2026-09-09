@@ -10,6 +10,7 @@
     "./navigator.css": "./src/navigator.css"
   },
   "dependencies": {
-    "@workshell/kit": "*"
+    "@workshell/kit": "*",
+    "@workshell/theme": "*"
   }
 }
