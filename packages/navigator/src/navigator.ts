@@ -5,6 +5,8 @@ import {
   type AppRegistration,
   type DockId,
   type NormalizedApp,
+  type SurfaceElement,
+  type ViewContext,
   canonical,
   matchRule,
   normalizeRegistration,
@@ -18,6 +20,8 @@ export class Navigator {
   readonly root: HTMLElement;
   private readonly history: UrlHistory;
   private readonly apps = new Map<string, NormalizedApp>();
+  private readonly surfaceCache = new Map<string, SurfaceElement>();
+  private readonly drawerToggleBtn: HTMLButtonElement;
   private readonly backBtn: HTMLButtonElement;
   private readonly fwdBtn: HTMLButtonElement;
   private readonly addressInput: HTMLInputElement;
@@ -33,6 +37,9 @@ export class Navigator {
     this.root.className = "nav";
     const chrome = document.createElement("div");
     chrome.className = "nav-chrome";
+    this.drawerToggleBtn = button({ label: "Menu", kind: "neutral", onClick: () => this.toggleDrawer() });
+    this.drawerToggleBtn.dataset.nav = "drawer-toggle";
+    this.drawerToggleBtn.setAttribute("aria-label", "Toggle navigation menu");
     this.backBtn = button({ label: "Back", kind: "neutral", onClick: () => this.back() });
     this.backBtn.dataset.nav = "back";
     this.backBtn.setAttribute("aria-label", "Back");
@@ -44,13 +51,15 @@ export class Navigator {
     this.addressInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") this.go(this.addressInput.value);
     });
-    chrome.append(this.backBtn, this.fwdBtn, address);
+    chrome.append(this.drawerToggleBtn, this.backBtn, this.fwdBtn, address);
     const docks = document.createElement("div");
     docks.className = "nav-docks";
     for (const id of DOCKS) {
       const col = document.createElement("div");
       col.className = "nav-dock";
       col.dataset.dock = id;
+      col.dataset.empty = "true";
+      col.dataset.open = "false";
       docks.append(col);
     }
     this.root.append(chrome, docks);
@@ -69,12 +78,22 @@ export class Navigator {
     if (schemeOf(this.url) === norm.scheme) this.apply(this.history.current);
   }
 
+  toggleDrawer(): void {
+    const leading = this.root.querySelector('[data-dock="leading"]') as HTMLElement | null;
+    if (!leading) return;
+    leading.dataset.open = leading.dataset.open === "true" ? "false" : "true";
+  }
+
   go(href: string): void {
     const parsed = parseHref(href);
     if (!parsed) return;
     const next = canonical(parsed);
     if (!this.apps.has(schemeOf(parsed))) return;
-    if (next === this.history.current) return;
+    if (next === this.history.current) {
+      const leading = this.root.querySelector('[data-dock="leading"]') as HTMLElement | null;
+      if (leading) leading.dataset.open = "false";
+      return;
+    }
     this.history.push(next);
     this.apply(next);
   }
@@ -90,16 +109,38 @@ export class Navigator {
   }
 
   private apply(href: string): void {
+    const leadingDock = this.root.querySelector('[data-dock="leading"]') as HTMLElement | null;
+    if (leadingDock) leadingDock.dataset.open = "false";
     const url = new URL(href);
     const app = this.apps.get(schemeOf(url));
-    const ctx = { url, go: (h: string) => this.go(h) };
+    const ctx: ViewContext = {
+      url,
+      params: {},
+      query: url.searchParams,
+      go: (h: string) => this.go(h),
+      back: () => this.back(),
+      forward: () => this.forward(),
+      canGoBack: this.history.index > 0,
+      canGoForward: this.history.index < this.history.entries.length - 1,
+    };
     const rule = app ? matchRule(app.rules, url.pathname) : undefined;
     for (const id of DOCKS) {
       const col = this.root.querySelector(`[data-dock="${id}"]`) as HTMLElement;
       const viewName = rule?.docks[id];
       if (app && viewName) {
-        col.replaceChildren(app.views[viewName]!(ctx));
+        col.dataset.empty = "false";
+        const cacheKey = `${app.scheme}:${viewName}`;
+        let surface = this.surfaceCache.get(cacheKey);
+        if (!surface) {
+          surface = app.views[viewName]!(ctx);
+          this.surfaceCache.set(cacheKey, surface);
+        }
+        if (col.firstElementChild !== surface) {
+          col.replaceChildren(surface);
+        }
+        surface.onUpdate?.(ctx);
       } else {
+        col.dataset.empty = "true";
         col.replaceChildren();
       }
     }

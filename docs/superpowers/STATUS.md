@@ -20,6 +20,7 @@ This file tracks the status of all specs and plans in `docs/superpowers/`.
 | Spec | Plan | Status | Scope |
 |---|---|---|---|
 | [`2026-09-09-workshell-settings-design.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/superpowers/specs/2026-09-09-workshell-settings-design.md) | [`2026-09-09-workshell-settings.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/superpowers/plans/2026-09-09-workshell-settings.md) | **In Progress / Current** | `@workshell/theme` engine + builtin `base` (Win32 Classic), session hive persist, chrome/kit restyle, Settings guest with Appearance catalog. |
+| [`2026-09-09-workshell-navigator-dynamic-docks-design.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/superpowers/specs/2026-09-09-workshell-navigator-dynamic-docks-design.md) | [`2026-09-09-workshell-navigator-dynamic-docks.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/superpowers/plans/2026-09-09-workshell-navigator-dynamic-docks.md) | **Complete / Shipped** | `@workshell/navigator`: auto-collapsing empty docks, container query narrow drawer/detail mode, surface keep-alive/reparenting. |
 
 ---
 

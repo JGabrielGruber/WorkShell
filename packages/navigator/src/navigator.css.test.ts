@@ -23,5 +23,17 @@ describe("navigator.css pigment", () => {
     expect(css).toContain("280px");
     expect(css).toContain("var(--shadow)");
   });
+
+  it("defines auto-collapsing for empty docks", () => {
+    expect(css).toContain('.nav-dock[data-empty="true"]');
+    expect(css).toMatch(/\.nav-dock\[data-empty="true"\]\s*\{\s*display:\s*none;\s*\}/);
+  });
+
+  it("defines container query for narrow mode and drawer/modal overlays", () => {
+    expect(css).toContain("container-type: inline-size;");
+    expect(css).toContain("@container (max-width: 600px)");
+    expect(css).toContain('[data-nav="drawer-toggle"]');
+    expect(css).toContain('[data-dock="leading"][data-open="true"]');
+  });
 });
 

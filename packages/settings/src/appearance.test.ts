@@ -44,7 +44,16 @@ describe("appearanceView", () => {
         return el;
       },
     });
-    const fakeCtx = { url: new URL("settings:/appearance"), go: () => {} };
+    const fakeCtx = {
+      url: new URL("settings:/appearance"),
+      params: {},
+      query: new URLSearchParams(),
+      go: () => {},
+      back: () => {},
+      forward: () => {},
+      canGoBack: false,
+      canGoForward: false,
+    };
     const el = appearanceView(fakeCtx, session);
     expect(el.className).toContain("ws-page");
     expect(el.textContent).toContain("Appearance");

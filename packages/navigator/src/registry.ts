@@ -2,10 +2,20 @@ export type DockId = "leading" | "center" | "trailing";
 
 export type ViewContext = {
   url: URL;
+  params: Record<string, string>;
+  query: URLSearchParams;
   go: (href: string) => void;
+  back: () => void;
+  forward: () => void;
+  canGoBack: boolean;
+  canGoForward: boolean;
 };
 
-export type ViewFactory = (ctx: ViewContext) => HTMLElement;
+export type SurfaceElement = HTMLElement & {
+  onUpdate?: (ctx: ViewContext) => void;
+};
+
+export type ViewFactory = (ctx: ViewContext) => SurfaceElement;
 
 export type ViewRule = {
   path: string;
@@ -51,7 +61,7 @@ export function parseHref(href: string): URL | null {
 }
 
 export function canonical(url: URL): string {
-  return `${url.protocol}${url.pathname}`;
+  return `${url.protocol}${url.pathname}${url.search}`;
 }
 
 export function schemeOf(url: URL): string {
