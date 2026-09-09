@@ -1,3 +1,74 @@
 [data-theme="base"] {
   color-scheme: light;
+  --color-base-100: #ffffff;
+  --color-base-200: #c0c0c0;
+  --color-base-300: #808080;
+  --color-base-content: #000000;
+  --color-primary: #000080;
+  --color-primary-content: #ffffff;
+  --color-secondary: #1084d0;
+  --color-secondary-content: #ffffff;
+  --color-accent: #008080;
+  --color-accent-content: #ffffff;
+  --color-neutral: #c0c0c0;
+  --color-neutral-content: #000000;
+  --color-info: #000080;
+  --color-info-content: #ffffff;
+  --color-success: #008000;
+  --color-success-content: #ffffff;
+  --color-warning: #808000;
+  --color-warning-content: #000000;
+  --color-error: #800000;
+  --color-error-content: #ffffff;
+  --color-muted: #808080;
+  --font-sans: Tahoma, "MS Sans Serif", Arial, sans-serif;
+  --font-display: Tahoma, "MS Sans Serif", Arial, sans-serif;
+  --font-mono: Consolas, "Courier New", monospace;
+  --font-serif: "Times New Roman", Times, serif;
+  --text-xs: 9px;
+  --text-sm: 11px;
+  --text-md: 12px;
+  --text-lg: 13px;
+  --text-xl: 16px;
+  --leading: 1.2;
+  --tracking: 0;
+  --radius-box: 0;
+  --radius-field: 0;
+  --radius-selector: 0;
+  --border: 1px;
+  --shadow-sm: inset 1px 1px #808080, inset -1px -1px #ffffff;
+  --shadow: inset -1px -1px #000000, inset 1px 1px #ffffff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+  --shadow-inner: inset 1px 1px #808080, inset -1px -1px #ffffff, inset 2px 2px #000000, inset -2px -2px #dfdfdf;
+  --shadow-md: inset -1px -1px #000000, inset 1px 1px #ffffff, inset -3px -3px #808080, inset 3px 3px #dfdfdf;
+  --shadow-lg: inset -1px -1px #000000, inset 1px 1px #ffffff, inset -2px -2px #808080, inset 2px 2px #dfdfdf, 1px 1px 0 #000000;
+  --blur: 0px;
+  --blur-sm: 0px;
+  --wallpaper: none;
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+}
+
+[data-theme="base"] .panel[data-focus="true"] .panel-titlebar {
+  background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+  color: var(--color-primary-content);
+}
+
+[data-theme="base"] .panel:not([data-focus="true"]) .panel-titlebar {
+  background: var(--color-base-300);
+  color: var(--color-muted);
+}
+
+[data-theme="base"] #wallpaper::after {
+  background: none;
+}
+
+[data-theme="base"] .menu-row:hover,
+[data-theme="base"] .menu-row:focus-visible {
+  background: var(--color-primary);
+  color: var(--color-primary-content);
 }
