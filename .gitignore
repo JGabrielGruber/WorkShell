@@ -3,3 +3,12 @@ node_modules
 dist
 .DS_Store
 *.local
+
+# Borrowed vision assets — local only, not licensed for distribution
+archive/aetheris-glass/glass.webp
+archive/aetheris-glass/screen.png
+archive/aetheris-prism/abstract.webp
+archive/aetheris-prism/screen.png
+packages/themes/aetheris-glass/glass.jpeg
+packages/themes/aetheris-glass/glass.webp
+packages/themes/aetheris-prism/abstract.webp

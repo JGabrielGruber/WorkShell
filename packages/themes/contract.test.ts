@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -63,15 +63,13 @@ function assertContract(css: string, theme: string, scheme: "dark" | "light") {
 }
 
 describe("theme contract", () => {
-  it("glass defines the closed list and ships glass.webp", () => {
+  it("glass defines the closed list", () => {
     const css = load("aetheris-glass/tokens.css");
     assertContract(css, "aetheris-glass", "dark");
-    expect(existsSync(join(dir, "aetheris-glass/glass.webp"))).toBe(true);
   });
 
-  it("prism defines the closed list and ships abstract.webp", () => {
+  it("prism defines the closed list", () => {
     const css = load("aetheris-prism/tokens.css");
     assertContract(css, "aetheris-prism", "light");
-    expect(existsSync(join(dir, "aetheris-prism/abstract.webp"))).toBe(true);
   });
 });
