@@ -1,5 +1,5 @@
 {
-  "name": "@workshell/shell-demo",
+  "name": "@workshell/session-app",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -10,15 +10,12 @@
   },
   "dependencies": {
     "@workshell/compositor": "*",
-    "@workshell/desktop-shell": "*",
-    "@workshell/kit": "*",
-    "@workshell/navigator": "*",
+    "@workshell/desktop": "*",
+    "@workshell/session": "*",
     "@workshell/theme-aetheris-glass": "*",
     "@workshell/theme-aetheris-prism": "*"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.1.13",
-    "tailwindcss": "^4.1.13",
     "typescript": "^5.9.2",
     "vite": "^7.1.5"
   }

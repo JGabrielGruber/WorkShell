@@ -5,8 +5,8 @@
   "type": "module",
   "workspaces": ["packages/*", "packages/themes/*", "apps/*"],
   "scripts": {
-    "dev": "npm run dev -w @workshell/shell-demo",
-    "build": "npm run build -w @workshell/shell-demo",
+    "dev": "npm run dev -w @workshell/session-app",
+    "build": "npm run build -w @workshell/session-app",
     "test": "vitest run"
   },
   "devDependencies": {

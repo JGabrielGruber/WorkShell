@@ -1,8 +1,8 @@
 # Workshell
 
-Compositor-first desktop shell (vanilla TypeScript) with an Aetheris theme and a seed demo. Not a full SPA. Not a WebGPU renderer.
+Compositor-first vanilla TypeScript desktop. Not a SPA. Not a WebGPU renderer. Interactive session first, not a demo.
 
-Packages: `@workshell/compositor`, `@workshell/desktop-shell`, `@workshell/kit`, `@workshell/navigator`, `@workshell/theme-aetheris-glass`, `@workshell/theme-aetheris-prism`. App: `@workshell/shell-demo`.
+Packages: `@workshell/compositor`, `@workshell/session`, `@workshell/desktop`, `@workshell/kit`, `@workshell/navigator`, `@workshell/theme-aetheris-glass`, `@workshell/theme-aetheris-prism`. App: `@workshell/session-app`.
 
 ## Run
 
@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-Opens the shell-demo. Layout key: `localStorage["workshell.layout.v1"]` (`version: 2`). Clear it to restore the seed.
+Opens an empty desktop (wallpaper, taskbar, Menu, no windows). Layout key: `localStorage["workshell.layout.v1"]` (`version: 2`). Prefs key `workshell.prefs.v1` appears only after `session.setTheme`. Clear both keys to restore empty seed + glass.
 
 ## Test
 
@@ -19,17 +19,11 @@ Opens the shell-demo. Layout key: `localStorage["workshell.layout.v1"]` (`versio
 npm test
 ```
 
-## Acceptance demo
+## Acceptance
 
-1. Desktop shows wallpaper, four kanban lanes, taskbar, **TASK-104**, and a **Probe** window (navigator: tree + icon tiles, empty trailing). The board stays visible around the windows.
-1b. Click another card (e.g. TASK-112) — a second window opens, offset from the first. Click the same card again — that window focuses. Close it, click the card — it reopens.
-1c. Taskbar **Glass** / **Prism** switches the skin for this session (reload returns to Glass). Layout persist does not store the theme.
-1d. In Probe, click **Fields** (tree or icon): trailing shows the Fields page; address reads `probe:/fields`. Back returns to empty trailing. Taskbar **Prism** restyles Probe kit chrome as well as TASK-104; **Glass** reverses. Reload returns to Glass.
-2. Drag the window (titlebar) and resize from the bottom-right handle.
-3. Maximize — fills the usable desktop and stops above the taskbar. Unmaximize restores the float rect.
-4. Drag a maximized titlebar — it unmaximizes then floats.
-5. Hide — window gone, taskbar pill remains. Pill restores. Hide while maximized restores maximized.
-6. Close — no pill; reload does not bring the window back.
-7. Reload keeps float / maximized / hidden. Console reparent logs: `isConnected` stays true and `uid` is stable while the window lives.
-
-Seed: kanban widget (not a panel) + floating TASK-104 + floating Probe, filled by the demo through `boot({ fillWidgetLayer, fillPanelBody })`. Overlay and dock APIs exist but are not in the titlebar.
+1. `npm run dev` serves the empty OS session: wallpaper, taskbar, Menu, no windows.
+2. Reload: still empty, still Glass. Prefs key `workshell.prefs.v1` is **absent** until `session.setTheme`.
+3. Console `session.setTheme(workspace, "aetheris-prism")` restyles; reload stays Prism. Layout key `workshell.layout.v1` stays geometry-only.
+4. Leftover demo layout ids (`probe`, `task-104`) do not reappear as windows.
+5. Menu is empty (no Settings/Probe/kanban). No Glass/Prism buttons on the bar.
+6. Clear both `workshell.layout.v1` and `workshell.prefs.v1` to restore empty seed + glass.
