@@ -9,11 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@workshell/compositor": "*",
     "@workshell/desktop": "*",
     "@workshell/session": "*",
-    "@workshell/theme-aetheris-glass": "*",
-    "@workshell/theme-aetheris-prism": "*"
+    "@workshell/settings": "*"
   },
   "devDependencies": {
     "typescript": "^5.9.2",
