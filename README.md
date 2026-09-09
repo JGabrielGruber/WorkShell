@@ -2,7 +2,7 @@
 
 Compositor-first desktop shell (vanilla TypeScript) with an Aetheris theme and a seed demo. Not a full SPA. Not a WebGPU renderer.
 
-Packages: `@workshell/compositor`, `@workshell/desktop-shell`, `@workshell/theme-aetheris-glass`, `@workshell/theme-aetheris-prism`. App: `@workshell/shell-demo`.
+Packages: `@workshell/compositor`, `@workshell/desktop-shell`, `@workshell/kit`, `@workshell/navigator`, `@workshell/theme-aetheris-glass`, `@workshell/theme-aetheris-prism`. App: `@workshell/shell-demo`.
 
 ## Run
 
@@ -21,9 +21,10 @@ npm test
 
 ## Acceptance demo
 
-1. Desktop shows wallpaper, four kanban lanes, taskbar, one **TASK-104** window. The board stays visible around the window.
+1. Desktop shows wallpaper, four kanban lanes, taskbar, **TASK-104**, and a **Probe** window (navigator: tree + icon tiles, empty trailing). The board stays visible around the windows.
 1b. Click another card (e.g. TASK-112) — a second window opens, offset from the first. Click the same card again — that window focuses. Close it, click the card — it reopens.
 1c. Taskbar **Glass** / **Prism** switches the skin for this session (reload returns to Glass). Layout persist does not store the theme.
+1d. In Probe, click **Fields** (tree or icon): trailing shows the Fields page; address reads `probe:/fields`. Back returns to empty trailing. Taskbar **Prism** restyles Probe kit chrome as well as TASK-104; **Glass** reverses. Reload returns to Glass.
 2. Drag the window (titlebar) and resize from the bottom-right handle.
 3. Maximize — fills the usable desktop and stops above the taskbar. Unmaximize restores the float rect.
 4. Drag a maximized titlebar — it unmaximizes then floats.
@@ -31,4 +32,4 @@ npm test
 6. Close — no pill; reload does not bring the window back.
 7. Reload keeps float / maximized / hidden. Console reparent logs: `isConnected` stays true and `uid` is stable while the window lives.
 
-Seed: kanban widget (not a panel) + floating TASK-104, both filled by the demo through `boot({ fillWidgetLayer, fillPanelBody })`. Overlay and dock APIs exist but are not in the titlebar.
+Seed: kanban widget (not a panel) + floating TASK-104 + floating Probe, filled by the demo through `boot({ fillWidgetLayer, fillPanelBody })`. Overlay and dock APIs exist but are not in the titlebar.
