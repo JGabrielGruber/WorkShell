@@ -1,4 +1,5 @@
 import {
+  CASCADE_PX,
   DEFAULT_FLOAT,
   DEFAULT_LEFT_W,
   DEFAULT_RIGHT_W,
@@ -7,11 +8,12 @@ import {
 
 export { STORAGE_KEY } from "@workshell/desktop-shell";
 
-export const KNOWN_IDS = ["task-104"] as const;
+export const KNOWN_IDS = ["task-104", "probe"] as const;
 export type KnownId = (typeof KNOWN_IDS)[number];
 
 export const PANEL_META: Record<KnownId, { title: string }> = {
   "task-104": { title: "TASK-104" },
+  probe: { title: "Probe" },
 };
 
 export function seedLayout(): LayoutState {
@@ -35,9 +37,20 @@ export function seedLayout(): LayoutState {
         h: float.h,
         z: 2,
       },
+      probe: {
+        id: "probe",
+        uid: "",
+        title: PANEL_META.probe.title,
+        mode: "float",
+        x: float.x + CASCADE_PX,
+        y: float.y + CASCADE_PX,
+        w: float.w,
+        h: float.h,
+        z: 3,
+      },
     },
     overlay: null,
     closed: [],
-    nextZ: 3,
+    nextZ: 4,
   };
 }

@@ -16,7 +16,7 @@ describe("tabs", () => {
     });
     const tablist = el.querySelector('[role="tablist"]');
     expect(tablist).toBeTruthy();
-    const panels = [...el.querySelectorAll('[role="tabpanel"]')];
+    const panels = [...el.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
     expect(panels).toHaveLength(2);
     expect(panels[0].hidden).toBe(false);
     expect(panels[1].hidden).toBe(true);
