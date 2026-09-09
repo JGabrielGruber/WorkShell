@@ -1,34 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_FLOAT, DEFAULT_LEFT_W, DEFAULT_RIGHT_W, type LayoutState } from "@workshell/compositor";
+import { STORAGE_KEY } from "@workshell/compositor";
+import { createSession, emptyLayout, PREFS_KEY } from "@workshell/session";
 import { createDesktop } from "./host";
-
-function seedLayout(): LayoutState {
-  const float = DEFAULT_FLOAT;
-  return {
-    version: 2,
-    slots: {
-      left: { width: DEFAULT_LEFT_W, order: [], activeId: null },
-      center: { width: 0, order: [], activeId: null },
-      right: { width: DEFAULT_RIGHT_W, order: [], activeId: null },
-    },
-    panels: {
-      "task-104": {
-        id: "task-104",
-        uid: "",
-        title: "TASK-104",
-        mode: "float",
-        x: float.x,
-        y: float.y,
-        w: float.w,
-        h: float.h,
-        z: 2,
-      },
-    },
-    overlay: null,
-    closed: [],
-    nextZ: 3,
-  };
-}
 
 function mem(): Storage {
   const m = new Map<string, string>();
@@ -48,96 +21,95 @@ function mem(): Storage {
   };
 }
 
+const leftover = {
+  version: 2,
+  slots: {
+    left: { width: 320, order: ["probe"], activeId: "probe" },
+    center: { width: 0, order: [], activeId: null },
+    right: { width: 360, order: [], activeId: null },
+  },
+  panels: {
+    probe: { id: "probe", uid: "", title: "Probe", mode: "float", x: 1, y: 1, w: 100, h: 100, z: 1 },
+  },
+  overlay: null,
+  closed: [],
+  nextZ: 2,
+};
+
+function glassSession(storage: Storage = mem()) {
+  return createSession({ defaultTheme: "aetheris-glass", storage });
+}
+
 describe("createDesktop", () => {
-  it("throws if engine is read before boot", () => {
-    const root = document.createElement("div");
-    const host = createDesktop(root);
-    expect(() => host.engine).toThrow(/boot/);
+  it("stamps glass and does not write prefs", () => {
+    const storage = mem();
+    const session = glassSession(storage);
+    const { workspace } = createDesktop(document.createElement("div"), session, { seed: emptyLayout });
+    expect(workspace.dataset.theme).toBe("aetheris-glass");
+    expect(workspace.getAttribute("data-theme")).toBe("aetheris-glass");
+    expect(storage.getItem(PREFS_KEY)).toBeNull();
   });
 
-  it("boot twice throws", () => {
-    const root = document.createElement("div");
-    const host = createDesktop(root);
-    const opts = {
-      theme: "aetheris-glass",
-      seed: seedLayout,
-      storage: mem(),
-      fillWidgetLayer: () => {},
-      fillPanelBody: () => {},
-    };
-    host.boot(opts);
-    expect(() => host.boot(opts)).toThrow(/already/);
+  it("leaves widget-layer empty", () => {
+    const session = glassSession();
+    const { workspace } = createDesktop(document.createElement("div"), session, { seed: emptyLayout });
+    expect(workspace.querySelector("#widget-layer")?.children.length).toBe(0);
   });
 
-  it("missing fills throw", () => {
-    const root = document.createElement("div");
-    const host = createDesktop(root);
-    expect(() =>
-      host.boot({
-        theme: "aetheris-glass",
-        seed: seedLayout,
-        storage: mem(),
-        fillWidgetLayer: undefined as unknown as (el: HTMLElement) => void,
-        fillPanelBody: () => {},
-      }),
-    ).toThrow();
+  it("mounts Menu in the menu slot; empty registry opens to zero rows", () => {
+    const session = glassSession();
+    const { workspace } = createDesktop(document.createElement("div"), session, { seed: emptyLayout });
+    const slot = workspace.querySelector("[data-slot=menu]");
+    const btn = slot?.querySelector("[aria-label=Menu]");
+    expect(btn).toBeTruthy();
+    (btn as HTMLElement).click();
+    const list = (btn as HTMLElement).nextElementSibling as HTMLElement;
+    expect(list.children.length).toBe(0);
+    expect(list.textContent?.trim()).toBe("");
   });
 
-  it("calls fills once and sets data-theme", () => {
-    const root = document.createElement("div");
-    const host = createDesktop(root);
-    const widgets: HTMLElement[] = [];
-    const bodies: Array<{ id: string; el: HTMLElement }> = [];
-    const engine = host.boot({
-      theme: "aetheris-glass",
-      seed: seedLayout,
-      storage: mem(),
-      fillWidgetLayer(el) {
-        widgets.push(el);
-      },
-      fillPanelBody(id, el) {
-        bodies.push({ id, el });
+  it("opens a registered app from the menu into a panel body", () => {
+    const session = glassSession();
+    session.register({
+      id: "fake",
+      title: "Fake",
+      mount(el) {
+        el.textContent = "ok";
       },
     });
-    expect(widgets).toHaveLength(1);
-    expect(widgets[0].id).toBe("widget-layer");
-    expect(bodies).toEqual([{ id: "task-104", el: expect.any(HTMLElement) }]);
-    expect(bodies[0].el.className).toBe("panel-body");
-    expect(bodies[0].el.childNodes.length).toBe(0);
-    expect(host.workspace.dataset.theme).toBe("aetheris-glass");
-    expect(host.engine).toBe(engine);
-    expect(engine.node("task-104").querySelector(".inspector")).toBeNull();
-    host.setTheme("other");
-    expect(host.workspace.dataset.theme).toBe("other");
-  });
-
-  it("unknown panel body stays empty", () => {
-    const root = document.createElement("div");
-    const host = createDesktop(root);
-    host.boot({
-      theme: "aetheris-glass",
-      seed: seedLayout,
-      storage: mem(),
-      fillWidgetLayer() {},
-      fillPanelBody() {},
+    const { workspace, engine } = createDesktop(document.createElement("div"), session, {
+      seed: emptyLayout,
     });
-    const body = host.engine.node("task-104").querySelector(".panel-body");
-    expect(body?.childNodes.length).toBe(0);
+    const btn = workspace.querySelector("[data-slot=menu] [aria-label=Menu]") as HTMLElement;
+    btn.click();
+    const list = btn.nextElementSibling as HTMLElement;
+    const row = [...list.querySelectorAll("*"), ...list.children].find((el) => el.textContent === "Fake") as
+      | HTMLElement
+      | undefined;
+    expect(row).toBeTruthy();
+    row!.click();
+    expect(engine.state.panels.fake).toBeDefined();
+    expect(engine.node("fake").querySelector(".panel-body")?.textContent).toBe("ok");
+    expect(workspace.querySelector("[data-slot=menu] [aria-label=Menu]")).toBeTruthy();
+    expect(workspace.querySelector("#taskbar-pills .task-pill")).toBeTruthy();
   });
 
-  it("fill callback throw is not swallowed", () => {
-    const root = document.createElement("div");
-    const host = createDesktop(root);
-    expect(() =>
-      host.boot({
-        theme: "aetheris-glass",
-        seed: seedLayout,
-        storage: mem(),
-        fillWidgetLayer() {},
-        fillPanelBody() {
-          throw new Error("fill failed");
-        },
-      }),
-    ).toThrow("fill failed");
+  it("throws on a second createDesktop with the same session", () => {
+    const session = glassSession();
+    createDesktop(document.createElement("div"), session, { seed: emptyLayout });
+    expect(() => createDesktop(document.createElement("div"), session, { seed: emptyLayout })).toThrow(
+      /already/,
+    );
+  });
+
+  it("drops leftover probe when the registry is empty", () => {
+    const storage = mem();
+    storage.setItem(STORAGE_KEY, JSON.stringify(leftover));
+    const session = glassSession(storage);
+    const { workspace, engine } = createDesktop(document.createElement("div"), session, {
+      seed: emptyLayout,
+    });
+    expect(engine.state.panels.probe).toBeUndefined();
+    expect(workspace.querySelector("[data-id=probe]")).toBeNull();
   });
 });

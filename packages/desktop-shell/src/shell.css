@@ -131,6 +131,53 @@
 #taskbar [data-slot="menu"] {
   display: flex;
   align-items: center;
+  position: relative;
+}
+
+.menu-button {
+  padding: 6px 14px;
+  font-size: 11px;
+  cursor: pointer;
+  border: var(--border) solid var(--glass-border);
+  background: var(--glass-card);
+  color: var(--color-base-content);
+  border-radius: var(--radius-selector);
+  font-family: var(--font-display);
+}
+
+.menu-list {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  border-radius: var(--radius-box);
+  background: var(--glass);
+  backdrop-filter: blur(var(--glass-blur)) saturate(190%);
+  border: var(--border) solid var(--glass-border);
+  z-index: 40;
+}
+
+.menu-list[hidden] {
+  display: none;
+}
+
+.menu-row {
+  padding: 6px 12px;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--color-base-content);
+  border-radius: var(--radius-selector);
+  font-family: var(--font-sans);
+}
+
+.menu-row:hover {
+  background: var(--glass-card);
 }
 
 .task-pill {
