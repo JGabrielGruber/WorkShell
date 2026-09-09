@@ -47,6 +47,12 @@ export function buildWorkspace(root: HTMLElement): EngineHosts {
 
   const taskbar = document.createElement("nav");
   taskbar.id = "taskbar";
+  const menuSlot = document.createElement("div");
+  menuSlot.dataset.slot = "menu";
+  const pills = document.createElement("div");
+  pills.id = "taskbar-pills";
+  pills.dataset.slot = "pills";
+  taskbar.append(menuSlot, pills);
 
   const overlayDim = document.createElement("div");
   overlayDim.id = "overlay-dim";
@@ -65,6 +71,6 @@ export function buildWorkspace(root: HTMLElement): EngineHosts {
     overlayHost,
     overlayDim,
     snapPreview,
-    taskbar,
+    taskbar: pills,
   };
 }

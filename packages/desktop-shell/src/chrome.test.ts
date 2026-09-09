@@ -14,7 +14,11 @@ describe("buildWorkspace", () => {
     expect(hosts.snapPreview.id).toBe("snap-preview");
     expect(hosts.overlayDim.id).toBe("overlay-dim");
     expect(hosts.overlayHost.id).toBe("overlay-host");
-    expect(hosts.taskbar.id).toBe("taskbar");
+    expect(hosts.workspace.querySelector("#taskbar")?.tagName).toBe("NAV");
+    expect(hosts.taskbar.getAttribute("data-slot")).toBe("pills");
+    expect(hosts.taskbar.id).toBe("taskbar-pills");
+    expect(hosts.workspace.querySelector("#taskbar [data-slot='menu']")).toBeTruthy();
+    expect(hosts.taskbar.parentElement?.id).toBe("taskbar");
     expect(root.querySelector("#dock-row")).toBeNull();
     expect(root.querySelector("#topbar")).toBeNull();
     const kids = [...hosts.workspace.children].map((el) => el.id);

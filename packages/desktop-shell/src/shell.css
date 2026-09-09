@@ -122,6 +122,17 @@
   border: var(--border) solid var(--glass-border);
 }
 
+#taskbar [data-slot="pills"] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#taskbar [data-slot="menu"] {
+  display: flex;
+  align-items: center;
+}
+
 .task-pill {
   padding: 6px 14px;
   font-size: 11px;
