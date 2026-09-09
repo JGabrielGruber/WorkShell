@@ -297,32 +297,61 @@
   letter-spacing: var(--tracking);
 }
 
-.traffic {
+.caption-buttons {
   display: flex;
   align-items: center;
-  gap: 8px;
 }
 
-.tl {
-  width: 12px;
-  height: 12px;
+.caption-btn {
+  width: 16px;
+  height: 14px;
   padding: 0;
   border: none;
-  border-radius: 50%;
+  border-radius: var(--radius-field);
+  background: var(--color-base-200);
+  color: var(--color-base-content);
+  box-shadow: var(--shadow);
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.caption-close {
+  margin-left: var(--space-2);
+}
+
+.caption-btn:active {
   box-shadow: var(--shadow-inner);
 }
 
-.tl-close {
-  background: var(--color-error);
+.caption-min::before {
+  content: "";
+  width: 8px;
+  height: var(--border);
+  margin-top: 4px;
+  background: currentColor;
 }
 
-.tl-hide {
-  background: var(--color-warning);
+.caption-max::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  box-sizing: border-box;
+  border: var(--border) solid currentColor;
 }
 
-.tl-max {
-  background: var(--color-success);
+.caption-close::before {
+  content: "×";
+  font-size: var(--text-md);
+  line-height: 1;
+}
+
+.panel[data-mode="maximized"] .caption-max::before {
+  width: 6px;
+  height: 6px;
+  box-shadow: 2px -2px 0 0 currentColor;
 }
 
 .panel-actions {

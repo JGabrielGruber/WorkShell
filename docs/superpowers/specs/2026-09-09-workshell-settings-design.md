@@ -376,7 +376,7 @@ Hex in compositor/desktop/kit/navigator CSS: **forbidden** for color/radius/blur
 
 `backdrop-filter: blur(var(--blur))` is ok; on base `--blur: 0px` it is a no-op.
 
-Titlebar gradient (primary → secondary), traffic-light fills, menu highlight: **`[data-theme="base"]` hatches** in `@workshell/theme` targeting existing class names (same pattern as old `#wallpaper::after`). Do not put navy hex in `shell.css`.
+Titlebar gradient (primary → secondary), menu highlight: **`[data-theme="base"]` hatches** in `@workshell/theme` targeting existing class names (same pattern as old `#wallpaper::after`). Caption buttons are Classic gray mini push buttons in `shell.css` (`--color-base-200`, `--shadow`; not status fills). Do not put navy hex in `shell.css`.
 
 ## Settings guest
 

@@ -12,12 +12,12 @@ export function createPanelChrome(id: string, title: string): HTMLElement {
   el.dataset.uid = uid();
   el.innerHTML = `
     <div class="panel-titlebar">
-      <div class="traffic">
-        <button type="button" class="tl tl-close" data-action="close" aria-label="Close"></button>
-        <button type="button" class="tl tl-hide" data-action="hide" aria-label="Hide"></button>
-        <button type="button" class="tl tl-max" data-action="maximize" aria-label="Maximize"></button>
-      </div>
       <span class="panel-title"></span>
+      <div class="caption-buttons">
+        <button type="button" class="caption-btn caption-min" data-action="hide" aria-label="Minimize"></button>
+        <button type="button" class="caption-btn caption-max" data-action="maximize" aria-label="Maximize"></button>
+        <button type="button" class="caption-btn caption-close" data-action="close" aria-label="Close"></button>
+      </div>
     </div>
     <div class="panel-body"></div>
     <div class="resize-handle" data-resize="1"></div>
