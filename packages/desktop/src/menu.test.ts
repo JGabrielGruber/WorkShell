@@ -21,15 +21,15 @@ function mem(): Storage {
   };
 }
 
-function glassSession() {
-  return createSession({ defaultTheme: "aetheris-glass", storage: mem() });
+function makeSession(storage: Storage = mem()) {
+  return createSession({ storage });
 }
 
 describe("mountMenu", () => {
   it("opens an empty list with no placeholder", () => {
     const host = document.createElement("div");
     const open = vi.fn();
-    mountMenu(host, glassSession(), { open } as unknown as WorkspaceEngine);
+    mountMenu(host, makeSession(), { open } as unknown as WorkspaceEngine);
     const btn = host.querySelector("[aria-label=Menu]") as HTMLElement;
     expect(btn.getAttribute("aria-expanded")).toBe("false");
     const list = btn.nextElementSibling as HTMLElement;
@@ -44,7 +44,7 @@ describe("mountMenu", () => {
 
   it("rebuilds from live list() on open and opens the app on row click", () => {
     const host = document.createElement("div");
-    const session = glassSession();
+    const session = makeSession();
     const open = vi.fn();
     mountMenu(host, session, { open } as unknown as WorkspaceEngine);
     session.register({ id: "fake", title: "Fake", mount() {} });

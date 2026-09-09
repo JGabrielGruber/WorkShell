@@ -36,28 +36,28 @@ const leftover = {
   nextZ: 2,
 };
 
-function glassSession(storage: Storage = mem()) {
-  return createSession({ defaultTheme: "aetheris-glass", storage });
+function makeSession(storage: Storage = mem()) {
+  return createSession({ storage });
 }
 
 describe("createDesktop", () => {
-  it("stamps glass and does not write prefs", () => {
+  it("stamps base and does not write prefs", () => {
     const storage = mem();
-    const session = glassSession(storage);
+    const session = makeSession(storage);
     const { workspace } = createDesktop(document.createElement("div"), session, { seed: emptyLayout });
-    expect(workspace.dataset.theme).toBe("aetheris-glass");
-    expect(workspace.getAttribute("data-theme")).toBe("aetheris-glass");
+    expect(workspace.dataset.theme).toBe("base");
+    expect(workspace.getAttribute("data-theme")).toBe("base");
     expect(storage.getItem(PREFS_KEY)).toBeNull();
   });
 
   it("leaves widget-layer empty", () => {
-    const session = glassSession();
+    const session = makeSession();
     const { workspace } = createDesktop(document.createElement("div"), session, { seed: emptyLayout });
     expect(workspace.querySelector("#widget-layer")?.children.length).toBe(0);
   });
 
   it("mounts Menu in the menu slot; empty registry opens to zero rows", () => {
-    const session = glassSession();
+    const session = makeSession();
     const { workspace } = createDesktop(document.createElement("div"), session, { seed: emptyLayout });
     const slot = workspace.querySelector("[data-slot=menu]");
     const btn = slot?.querySelector("[aria-label=Menu]");
@@ -69,7 +69,7 @@ describe("createDesktop", () => {
   });
 
   it("opens a registered app from the menu into a panel body", () => {
-    const session = glassSession();
+    const session = makeSession();
     session.register({
       id: "fake",
       title: "Fake",
@@ -95,7 +95,7 @@ describe("createDesktop", () => {
   });
 
   it("throws on a second createDesktop with the same session", () => {
-    const session = glassSession();
+    const session = makeSession();
     createDesktop(document.createElement("div"), session, { seed: emptyLayout });
     expect(() => createDesktop(document.createElement("div"), session, { seed: emptyLayout })).toThrow(
       /already/,
@@ -105,7 +105,7 @@ describe("createDesktop", () => {
   it("drops leftover probe when the registry is empty", () => {
     const storage = mem();
     storage.setItem(STORAGE_KEY, JSON.stringify(leftover));
-    const session = glassSession(storage);
+    const session = makeSession(storage);
     const { workspace, engine } = createDesktop(document.createElement("div"), session, {
       seed: emptyLayout,
     });
