@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "npm run dev -w @workshell/session-app",
     "build": "npm run build -w @workshell/session-app",
-    "test": "vitest run"
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.13",

@@ -27,3 +27,14 @@ npm test
 4. Console `session.setTheme("base")` writes prefs; reload stays base.
 5. Layout key stays geometry-only. Leftover demo ids do not reappear.
 6. Clear both `workshell.layout.v1` and `workshell.prefs.v1` to restore empty seed + base.
+
+## Documentation
+
+- **Agents & Contributors Guide:** [AGENTS.md](file:///home/jgabrielgruber/Projects/Tests/workshell/AGENTS.md)
+- **Architecture Overview:** [docs/architecture/overview.md](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/architecture/overview.md)
+- **Performance & Invariants:** [docs/architecture/invariants.md](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/architecture/invariants.md)
+- **Development & Testing:** [docs/development/workflow.md](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/development/workflow.md)
+- **Naming Discipline:** [docs/writing/naming.md](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/writing/naming.md)
+- **Spec Authoring Guide:** [docs/writing/spec-guide.md](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/writing/spec-guide.md)
+- **Specs & Plans Map:** [docs/superpowers/STATUS.md](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/superpowers/STATUS.md)
+
