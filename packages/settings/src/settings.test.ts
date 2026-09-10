@@ -29,9 +29,15 @@ describe("createSettings", () => {
     expect(app.title).toBe("Settings");
   });
 
-  it("mounts navigator at settings:/appearance and lists catalog", () => {
+  it("mounts navigator at settings:/appearance as a section", () => {
     const storage = mem();
     const session = createSession({ storage });
+    const setTheme = session.setTheme.bind(session);
+    let setThemeCalls = 0;
+    session.setTheme = (id) => {
+      setThemeCalls += 1;
+      return setTheme(id);
+    };
     session.register(createSettings(session));
     const { workspace, engine } = createDesktop(document.createElement("div"), session, {
       seed: emptyLayout,
@@ -42,22 +48,34 @@ describe("createSettings", () => {
     const settingsRow = [...menuList.querySelectorAll("*")].find((el) => el.textContent === "Settings") as
       | HTMLElement
       | undefined;
-    expect(settingsRow).toBeTruthy();
     settingsRow!.click();
-    expect(engine.state.panels.settings).toBeDefined();
     const body = engine.node("settings").querySelector(".panel-body")!;
-    expect(body.querySelector(".nav")).toBeTruthy();
     const input = body.querySelector(".nav-chrome input") as HTMLInputElement;
     expect(input.value).toBe("settings:/appearance");
-    expect(body.textContent).toContain("Appearance");
-    expect(body.textContent).toContain("Base");
-    const row = [...body.querySelectorAll("[data-id]")].find(
+    expect(body.querySelector(".nav-dock[data-dock=leading]")?.textContent).toContain("Appearance");
+    expect(body.querySelector(".nav-dock[data-dock=leading]")?.textContent).toContain("Theme");
+    expect(body.querySelector(".nav-dock[data-dock=center]")?.textContent).toContain("Theme");
+    expect(body.querySelector(".nav-dock[data-dock=trailing]")?.getAttribute("data-empty")).toBe("true");
+
+    const themeIcon = [...body.querySelectorAll("[data-id]")].find(
+      (el) => (el as HTMLElement).dataset.id === "theme",
+    ) as HTMLElement;
+    themeIcon.click();
+    expect(input.value).toBe("settings:/appearance/theme");
+    expect(body.querySelector(".nav-dock[data-dock=center]")?.textContent).toContain("Base");
+    expect(body.querySelector(".nav-dock[data-dock=trailing]")?.getAttribute("data-empty")).toBe("true");
+
+    const baseIcon = [...body.querySelectorAll("[data-id]")].find(
       (el) => (el as HTMLElement).dataset.id === "base",
     ) as HTMLElement;
-    expect(row).toBeTruthy();
-    row.click();
-    expect(workspace.dataset.theme).toBe("base");
-    expect(JSON.parse(storage.getItem(PREFS_KEY)!)).toEqual({ version: 1, theme: "base" });
-    expect(workspace.querySelector("[data-slot=menu] [aria-label=Menu]")).toBeTruthy();
+    baseIcon.click();
+    expect(input.value).toBe("settings:/appearance/theme/base");
+    expect(setThemeCalls).toBe(0);
+    expect(storage.getItem(PREFS_KEY)).toBeNull();
+    const trailing = body.querySelector(".nav-dock[data-dock=trailing]")!;
+    expect(trailing.getAttribute("data-empty")).toBe("false");
+    expect(trailing.textContent).toContain("Colors");
+    expect(trailing.textContent).toContain("--color-primary");
+    expect(trailing.textContent).toContain("#000080");
   });
 });

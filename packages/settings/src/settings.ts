@@ -1,6 +1,7 @@
 import { Navigator } from "@workshell/navigator";
 import type { AppRegistration, WorkshellSession } from "@workshell/session";
-import { appearanceView } from "./appearance";
+import { colorsPage } from "./colors";
+import { settingsGraph } from "./graph";
 
 export function createSettings(session: WorkshellSession): AppRegistration {
   return {
@@ -10,8 +11,10 @@ export function createSettings(session: WorkshellSession): AppRegistration {
       const nav = new Navigator(el, { initialUrl: "settings:/appearance" });
       nav.register({
         scheme: "settings",
-        views: { appearance: (ctx) => appearanceView(ctx, session) },
-        rules: [{ path: "/", docks: { center: "appearance" } }],
+        graph: settingsGraph(session),
+        kinds: {
+          "theme-colors": { detail: (ctx) => colorsPage(ctx, session) },
+        },
       });
     },
   };
