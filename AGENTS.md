@@ -5,7 +5,7 @@ Operate as a disciplined systems engineer. This codebase uses **Spec-Driven Deve
 ## Current State & Navigation
 
 - **Status Manifest:** [`docs/superpowers/STATUS.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/superpowers/STATUS.md)
-- **Active Plan:** none yet (spec `2026-09-10-workshell-settings-resource-spec` awaiting plan)
+- **Active Plan:** [`docs/superpowers/plans/2026-09-10-workshell-settings-resource-spec.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/superpowers/plans/2026-09-10-workshell-settings-resource-spec.md)
 - **Active Spec:** [`docs/superpowers/specs/2026-09-10-workshell-settings-resource-spec-design.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/superpowers/specs/2026-09-10-workshell-settings-resource-spec-design.md)
 - **System Vision:** [`docs/vision/os.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/vision/os.md) (living aim — not a spec; skills cite, do not author)
 - **Architecture Overview:** [`docs/architecture/overview.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/architecture/overview.md)
