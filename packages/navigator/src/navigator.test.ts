@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { Navigator } from "./navigator";
-import type { AppRegistration, SurfaceElement, ViewContext } from "./registry";
+import type { AppRegistration, NodeSpec, SurfaceElement, ViewContext } from "./registry";
 
 function fixture(): AppRegistration {
   const box = (name: string) => () => {
@@ -274,4 +274,80 @@ describe("Navigator", () => {
     expect(oneCreations).toBe(1);
     expect(twoCreations).toBe(1);
   });
+
+  it("graph: empty trailing until instance; window not required", () => {
+    const host = document.createElement("div");
+    const nav = new Navigator(host, { initialUrl: "settings:/appearance" });
+    const kinds = {
+      "theme-colors": {
+        detail: () => {
+          const el = document.createElement("div");
+          el.dataset.view = "colors";
+          return el;
+        },
+      },
+    };
+    nav.register({ scheme: "settings", graph: settingsGraph(), kinds });
+    expect(dock(nav, "leading").textContent).toContain("Theme");
+    expect(dock(nav, "center").textContent).toContain("Theme");
+    expect(dock(nav, "trailing").dataset.empty).toBe("true");
+
+    nav.go("settings:/appearance/theme");
+    expect(dock(nav, "center").textContent).toContain("Base");
+    expect(dock(nav, "trailing").dataset.empty).toBe("true");
+
+    nav.go("settings:/appearance/theme/base");
+    expect(dock(nav, "center").textContent).toContain("Base");
+    expect(dock(nav, "trailing").dataset.empty).toBe("false");
+    expect(dock(nav, "trailing").textContent).toContain("Colors");
+
+    const tab = dock(nav, "trailing").querySelector("[role=tab]") as HTMLElement;
+    tab.click();
+    expect(nav.url.pathname).toBe("/appearance/theme/base/colors");
+  });
 });
+
+function settingsGraph(ids: string[] = ["base"]): NodeSpec {
+  return {
+    segment: "",
+    title: "Settings",
+    tree: false,
+    listing: "children",
+    detail: "none",
+    children: [
+      {
+        segment: "appearance",
+        title: "Appearance",
+        tree: true,
+        listing: "children",
+        detail: "none",
+        children: [
+          {
+            segment: "theme",
+            title: "Theme",
+            tree: true,
+            listing: "children",
+            detail: "none",
+            children: () =>
+              ids.map((id) => ({
+                segment: id,
+                title: id === "base" ? "Base" : id,
+                listing: "parent" as const,
+                detail: "tabs" as const,
+                children: [
+                  {
+                    segment: "colors",
+                    title: "Colors",
+                    tabOfParent: true,
+                    listing: "none" as const,
+                    detail: "page" as const,
+                    kind: "theme-colors",
+                  },
+                ],
+              })),
+          },
+        ],
+      },
+    ],
+  };
+}

@@ -1,6 +1,7 @@
 import { button } from "@workshell/kit";
 import { field } from "@workshell/kit";
 import { UrlHistory } from "./history";
+import { resolve, spawn } from "./graph";
 import {
   type AppRegistration,
   type DockId,
@@ -123,25 +124,66 @@ export class Navigator {
       canGoBack: this.history.index > 0,
       canGoForward: this.history.index < this.history.entries.length - 1,
     };
-    const rule = app ? matchRule(app.rules, url.pathname) : undefined;
-    for (const id of DOCKS) {
-      const col = this.root.querySelector(`[data-dock="${id}"]`) as HTMLElement;
-      const viewName = rule?.docks[id];
-      if (app && viewName) {
-        col.dataset.empty = "false";
-        const cacheKey = `${app.scheme}:${viewName}`;
-        let surface = this.surfaceCache.get(cacheKey);
-        if (!surface) {
-          surface = app.views[viewName]!(ctx);
-          this.surfaceCache.set(cacheKey, surface);
+    if (app?.graph) {
+      const spawned = spawn({
+        url,
+        graph: app.graph,
+        kinds: app.kinds ?? {},
+        host: "navigator",
+        ctx,
+      });
+      const r = resolve(app.graph, url.pathname);
+      const listingKey = r.listingPath ?? "";
+      const detailKey = r.hole ? "hole" : r.nodePath + (r.node?.detail ?? "");
+      const assigned: Record<DockId, SurfaceElement | undefined> = {
+        leading: spawned.tree,
+        center: spawned.listing,
+        trailing: spawned.detail,
+      };
+      const keys: Record<DockId, string> = {
+        leading: `${app.scheme}:tree`,
+        center: `${app.scheme}:listing:${listingKey}`,
+        trailing: `${app.scheme}:detail:${detailKey}`,
+      };
+      for (const id of DOCKS) {
+        const col = this.root.querySelector(`[data-dock="${id}"]`) as HTMLElement;
+        const surface = assigned[id];
+        if (surface) {
+          col.dataset.empty = "false";
+          const cacheKey = keys[id];
+          let cached = this.surfaceCache.get(cacheKey);
+          if (!cached) {
+            cached = surface;
+            this.surfaceCache.set(cacheKey, cached);
+          }
+          if (col.firstElementChild !== cached) col.replaceChildren(cached);
+          cached.onUpdate?.(ctx);
+        } else {
+          col.dataset.empty = "true";
+          col.replaceChildren();
         }
-        if (col.firstElementChild !== surface) {
-          col.replaceChildren(surface);
+      }
+    } else {
+      const rule = app ? matchRule(app.rules, url.pathname) : undefined;
+      for (const id of DOCKS) {
+        const col = this.root.querySelector(`[data-dock="${id}"]`) as HTMLElement;
+        const viewName = rule?.docks[id];
+        if (app && viewName) {
+          col.dataset.empty = "false";
+          const cacheKey = `${app.scheme}:${viewName}`;
+          let surface = this.surfaceCache.get(cacheKey);
+          if (!surface) {
+            surface = app.views[viewName]!(ctx);
+            this.surfaceCache.set(cacheKey, surface);
+          }
+          if (col.firstElementChild !== surface) {
+            col.replaceChildren(surface);
+          }
+          surface.onUpdate?.(ctx);
+        } else {
+          col.dataset.empty = "true";
+          col.replaceChildren();
         }
-        surface.onUpdate?.(ctx);
-      } else {
-        col.dataset.empty = "true";
-        col.replaceChildren();
       }
     }
     this.syncChrome();
