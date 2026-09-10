@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { NodeSpec } from "./registry";
-import { resolve } from "./graph";
+import type { NodeSpec, ViewContext } from "./registry";
+import { resolve, spawn } from "./graph";
 
 function fixtureGraph(ids: string[] = ["base"]): NodeSpec {
   return {
@@ -78,5 +78,64 @@ describe("resolve", () => {
     const hole = resolve(graph, "/appearance/theme/nope");
     expect(hole.hole).toBe(true);
     expect(hole.listingNode?.segment).toBe("theme");
+  });
+});
+
+function ctx(href: string): ViewContext {
+  const url = new URL(href);
+  return {
+    url,
+    params: {},
+    query: url.searchParams,
+    go: () => {},
+    back: () => {},
+    forward: () => {},
+    canGoBack: false,
+    canGoForward: false,
+  };
+}
+
+describe("spawn", () => {
+  const graph = fixtureGraph();
+  const kinds = {
+    "theme-colors": {
+      detail: () => {
+        const el = document.createElement("div");
+        el.dataset.view = "colors";
+        return el;
+      },
+    },
+  };
+
+  it("navigator at appearance: tree+listing, no detail", () => {
+    const c = ctx("settings:/appearance");
+    const out = spawn({ url: c.url, graph, kinds, host: "navigator", ctx: c });
+    expect(out.tree?.textContent).toContain("Appearance");
+    expect(out.tree?.textContent).toContain("Theme");
+    expect(out.listing?.textContent).toContain("Theme");
+    expect(out.detail).toBeUndefined();
+  });
+
+  it("navigator at instance: listing stays catalog, detail is tab host", () => {
+    const c = ctx("settings:/appearance/theme/base");
+    const out = spawn({ url: c.url, graph, kinds, host: "navigator", ctx: c });
+    expect(out.listing?.textContent).toContain("Base");
+    expect(out.detail?.querySelector("[role=tab]")?.textContent).toContain("Colors");
+    expect(out.detail?.querySelector("[data-view=colors]")).toBeTruthy();
+  });
+
+  it("window at colors is colors only", () => {
+    const c = ctx("settings:/appearance/theme/base/colors");
+    const out = spawn({ url: c.url, graph, kinds, host: "window", ctx: c });
+    expect(out.main?.dataset.view).toBe("colors");
+    expect(out.tree).toBeUndefined();
+    expect(out.listing).toBeUndefined();
+  });
+
+  it("hole instance: not-found detail, listing ok", () => {
+    const c = ctx("settings:/appearance/theme/nope");
+    const out = spawn({ url: c.url, graph, kinds, host: "navigator", ctx: c });
+    expect(out.listing?.textContent).toContain("Base");
+    expect(out.detail?.textContent).toMatch(/Not found/i);
   });
 });
