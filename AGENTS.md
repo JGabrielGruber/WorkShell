@@ -7,7 +7,7 @@ Operate as a disciplined systems engineer. This codebase uses **Spec-Driven Deve
 - **Status Manifest:** [`docs/superpowers/STATUS.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/superpowers/STATUS.md)
 - **Active Plan:** [`docs/superpowers/plans/2026-09-09-workshell-settings.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/superpowers/plans/2026-09-09-workshell-settings.md)
 - **Active Spec:** [`docs/superpowers/specs/2026-09-09-workshell-settings-design.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/superpowers/specs/2026-09-09-workshell-settings-design.md)
-- **System Vision:** [`docs/superpowers/specs/2026-09-08-workshell-os-vision.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/superpowers/specs/2026-09-08-workshell-os-vision.md)
+- **System Vision:** [`docs/vision/os.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/vision/os.md) (living aim — not a spec; skills cite, do not author)
 - **Architecture Overview:** [`docs/architecture/overview.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/architecture/overview.md)
 - **Invariants & Performance Laws:** [`docs/architecture/invariants.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/architecture/invariants.md)
 

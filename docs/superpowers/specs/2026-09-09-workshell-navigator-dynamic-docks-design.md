@@ -4,7 +4,7 @@ Date: 2026-09-09
 Status: Approved / Implemented
 Project: workshell (test prototype)
 
-Depends on: OS vision (`2026-09-08-workshell-os-vision.md`), surface contract (`2026-09-09-workshell-surface-contract-design.md`), invariants (`docs/architecture/invariants.md`).
+Depends on: OS vision (`docs/vision/os.md`), surface contract (`2026-09-09-workshell-surface-contract-design.md`), invariants (`docs/architecture/invariants.md`).
 
 This spec does **not** change compositor window modes, persist key `workshell.layout.v1`, layout `version: 2`, the 180 Hz pointer-path law, or the closed theme token contract. It does not introduce tear-out (moving dock nodes to desktop panels), dock resize handles/splitters, or a bottom dock slot in this phase.
 

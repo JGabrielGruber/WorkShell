@@ -9,9 +9,14 @@ This file tracks the status of all specs and plans in `docs/superpowers/`.
 
 ## 1. System Vision (North Star)
 
+Vision lives in `docs/vision/`, **not** under Superpowers. Specs and plans hang off it; they do not replace it.
+
 | Document | Date | Type | Description |
 |---|---|---|---|
-| [`2026-09-08-workshell-os-vision.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/superpowers/specs/2026-09-08-workshell-os-vision.md) | 2026-09-08 | Vision / Roadmap | Layers, naming rules, dogfood order (0: Compositor/Shell -> 1: Kit/Navigator -> 2: Settings -> 3: Registry -> 4: Product App). |
+| [`docs/vision/os.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/vision/os.md) | 2026-09-08, amended 2026-09-10 | Living vision | Stance, layers, naming, navigator as explorer, Settings interior, dogfood order. |
+| [`docs/vision/README.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/vision/README.md) | 2026-09-10 | Index | Vision vs architecture vs Superpowers. |
+
+The old path `docs/superpowers/specs/2026-09-08-workshell-os-vision.md` is a pointer only.
 
 ---
 

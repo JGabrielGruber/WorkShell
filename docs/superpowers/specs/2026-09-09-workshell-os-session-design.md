@@ -4,7 +4,7 @@ Date: 2026-09-09
 Status: Approved in conversation (José: approach 2; names A; demo deleted; monolith frontend; `#workspace` is the one desktop surface — spatial desktops share the stamp; write the plan)
 Project: workshell (test prototype)
 
-Depends on: window manager (`2026-09-07-workshell-window-manager-design.md`), desktop shell (`2026-09-07-workshell-desktop-shell-design.md`), package carve (`2026-09-07-workshell-package-carve-design.md`), theme contract (`2026-09-08-workshell-theme-contract-design.md`), OS vision (`2026-09-08-workshell-os-vision.md`), surface contract (`2026-09-09-workshell-surface-contract-design.md`).
+Depends on: window manager (`2026-09-07-workshell-window-manager-design.md`), desktop shell (`2026-09-07-workshell-desktop-shell-design.md`), package carve (`2026-09-07-workshell-package-carve-design.md`), theme contract (`2026-09-08-workshell-theme-contract-design.md`), OS vision (`docs/vision/os.md`), surface contract (`2026-09-09-workshell-surface-contract-design.md`).
 
 This spec **does** change the boot door, the coordinating session, theme persist, and **where** `EngineHosts.taskbar` points (pills host, not the whole bar). It does **not** change layout key `workshell.layout.v1`, layout `version: 2`, the 180 Hz pointer path, `WorkspaceEngine.open()` semantics, compositor `sanitizeLayout` rules, or the closed theme token list. `renderTaskbar()` still `replaceChildren()` on **its host**; that host is no longer `#taskbar`.
 

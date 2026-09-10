@@ -2,6 +2,8 @@
 
 Workshell is a compositor-first vanilla TypeScript desktop OS layer. It is not an SPA, not a WebGPU canvas renderer, and not a demo. It provides an interactive multi-window session environment.
 
+Aim (living vision, not this file): [`docs/vision/os.md`](../vision/os.md). This document is **law** — layers, import graph, concepts as they stand.
+
 ## 1. System Layers
 
 ```

@@ -4,7 +4,7 @@ Date: 2026-09-09
 Status: Draft (locks from conversation; awaiting José review)
 Project: workshell (test prototype)
 
-Depends on: OS session (`2026-09-09-workshell-os-session-design.md`), theme contract (`2026-09-08-workshell-theme-contract-design.md`), surface contract (`2026-09-09-workshell-surface-contract-design.md`), OS vision (`2026-09-08-workshell-os-vision.md`).
+Depends on: OS session (`2026-09-09-workshell-os-session-design.md`), theme contract (`2026-09-08-workshell-theme-contract-design.md`), surface contract (`2026-09-09-workshell-surface-contract-design.md`), OS vision (`docs/vision/os.md`).
 
 Skin source: `archive/light-contrast/DESIGN.md` **prose** (Win32 / GetSysColor). YAML Material palette in that file is **not** law. Do not paste archive HTML.
 

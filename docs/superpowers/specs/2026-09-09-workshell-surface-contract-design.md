@@ -4,7 +4,7 @@ Date: 2026-09-09
 Status: Approved in conversation (José: probe prefix; frozen tokens; self-style kit; write the plan)
 Project: workshell (test prototype)
 
-Depends on: window manager (`2026-09-07-workshell-window-manager-design.md`), desktop shell (`2026-09-07-workshell-desktop-shell-design.md`), package carve (`2026-09-07-workshell-package-carve-design.md`), card-open (`2026-09-08-workshell-card-open-windows-design.md`), theme contract (`2026-09-08-workshell-theme-contract-design.md`), OS vision (`2026-09-08-workshell-os-vision.md`).
+Depends on: window manager (`2026-09-07-workshell-window-manager-design.md`), desktop shell (`2026-09-07-workshell-desktop-shell-design.md`), package carve (`2026-09-07-workshell-package-carve-design.md`), card-open (`2026-09-08-workshell-card-open-windows-design.md`), theme contract (`2026-09-08-workshell-theme-contract-design.md`), OS vision (`docs/vision/os.md`).
 
 This spec does **not** change window modes, persist key `workshell.layout.v1`, layout `version: 2`, the 180 Hz pointer path, `createDesktop` / `boot()` shape, `WorkspaceEngine.open()`, or `setTheme` (attribute stamp). It does not add Settings, a widget registry, narrow presentation as a mode, or daisyUI as a package.
 

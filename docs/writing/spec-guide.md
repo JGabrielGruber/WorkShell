@@ -7,6 +7,9 @@ All architectural evolution in Workshell follows **Spec-Driven Development (SDD)
 ## 1. Lifecycle of a Feature
 
 ```
+[Vision: docs/vision/]          ← living aim. Skills cite; they do not author.
+       │
+       ▼
 [Need Identified]
        │
        ▼
@@ -18,6 +21,8 @@ All architectural evolution in Workshell follows **Spec-Driven Development (SDD)
        ▼
 [Code & Invariant Tests Land]
 ```
+
+Do not file vision under `docs/superpowers/specs/`. Do not write a plan against `docs/vision/`.
 
 ---
 
