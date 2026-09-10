@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { createTheme } from "./theme";
 
 const css = readFileSync(
   join(dirname(fileURLToPath(import.meta.url)), "base/tokens.css"),
@@ -83,5 +84,14 @@ describe("base tokens", () => {
     expect(css).toMatch(/--radius-selector:\s*0/);
     expect(css).toMatch(/--blur:\s*0px/);
     expect(css).toMatch(/--blur-sm:\s*0px/);
+  });
+
+  it("inspect(base) matches --color-* literals in tokens.css", () => {
+    const names = CONTRACT_VARS.filter((n) => n.startsWith("--color-"));
+    const inspected = createTheme().inspect("base").colors;
+    expect(inspected.map((c) => c.token)).toEqual([...names]);
+    for (const { token, value } of inspected) {
+      expect(css, `css missing ${token}: ${value}`).toContain(`${token}: ${value}`);
+    }
   });
 });

@@ -45,4 +45,22 @@ describe("createTheme", () => {
     theme.apply(el, "prism");
     expect(el.dataset.theme).toBe("prism");
   });
+
+  it("inspects base color tokens without apply", () => {
+    const theme = createTheme();
+    const el = document.createElement("div");
+    el.dataset.theme = "already";
+    const colors = theme.inspect("base").colors;
+    expect(colors.find((c) => c.token === "--color-primary")).toEqual({
+      token: "--color-primary",
+      value: "#000080",
+    });
+    expect(el.dataset.theme).toBe("already");
+    expect(colors.every((c) => c.token.startsWith("--color-"))).toBe(true);
+  });
+
+  it("inspect unknown id throws", () => {
+    const theme = createTheme();
+    expect(() => theme.inspect("nope")).toThrow(/theme/);
+  });
 });
