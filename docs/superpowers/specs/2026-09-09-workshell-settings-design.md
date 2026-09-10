@@ -1,7 +1,7 @@
 # Workshell Settings + Theme Engine Design
 
 Date: 2026-09-09
-Status: Draft (locks from conversation; awaiting José review)
+Status: Shipped (engine + hive + stub guest). **Amended:** Appearance guest UI (`listView` + click `setTheme`) is superseded by `2026-09-10-workshell-settings-resource-spec-design.md`. Engine, `base`, and hive persist remain law.
 Project: workshell (test prototype)
 
 Depends on: OS session (`2026-09-09-workshell-os-session-design.md`), theme contract (`2026-09-08-workshell-theme-contract-design.md`), surface contract (`2026-09-09-workshell-surface-contract-design.md`), OS vision (`docs/vision/os.md`).

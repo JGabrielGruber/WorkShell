@@ -1,6 +1,6 @@
 # Workshell Project Status & Document Map
 
-Date: 2026-09-09
+Date: 2026-09-10
 Project: Workshell (OS Layer Prototype)
 
 This file tracks the status of all specs and plans in `docs/superpowers/`.
@@ -24,7 +24,8 @@ The old path `docs/superpowers/specs/2026-09-08-workshell-os-vision.md` is a poi
 
 | Spec | Plan | Status | Scope |
 |---|---|---|---|
-| [`2026-09-09-workshell-settings-design.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/superpowers/specs/2026-09-09-workshell-settings-design.md) | [`2026-09-09-workshell-settings.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/superpowers/plans/2026-09-09-workshell-settings.md) | **In Progress / Current** | `@workshell/theme` engine + builtin `base` (Win32 Classic), session hive persist, chrome/kit restyle, Settings guest with Appearance catalog. |
+| [`2026-09-10-workshell-settings-resource-spec-design.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/superpowers/specs/2026-09-10-workshell-settings-resource-spec-design.md) | *(plan not written)* | **Current** — design approved in conversation; spec awaiting José review | Settings **node spec**; navigator resolve/spawn by role; Appearance section → Theme catalog → instance → Colors inspect. No `setTheme` on this guest. |
+| [`2026-09-09-workshell-settings-design.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/superpowers/specs/2026-09-09-workshell-settings-design.md) | [`2026-09-09-workshell-settings.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/superpowers/plans/2026-09-09-workshell-settings.md) | **Shipped** (engine + hive + stub guest). Appearance `listView` + click `setTheme` **superseded** by 2026-09-10. | `@workshell/theme` engine + builtin `base`, session hive persist, chrome/kit restyle. |
 | [`2026-09-09-workshell-navigator-dynamic-docks-design.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/superpowers/specs/2026-09-09-workshell-navigator-dynamic-docks-design.md) | [`2026-09-09-workshell-navigator-dynamic-docks.md`](file:///home/jgabrielgruber/Projects/Tests/workshell/docs/superpowers/plans/2026-09-09-workshell-navigator-dynamic-docks.md) | **Complete / Shipped** | `@workshell/navigator`: auto-collapsing empty docks, container query narrow drawer/detail mode, surface keep-alive/reparenting. |
 
 ---
